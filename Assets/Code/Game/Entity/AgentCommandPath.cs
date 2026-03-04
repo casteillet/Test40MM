@@ -97,11 +97,7 @@ public class AgentCommandPath : ValidatedMonoBehaviour
             }
             else
             {
-                if (waypoint.Command is InteractCommand)
-                {
-                    Gizmos.color = Color.green;
-                } 
-                else if (waypoint.Command is LookAtCommand)
+                if (waypoint.Command is LookAtCommand)
                 {
                     Gizmos.color = Color.red;
                 }

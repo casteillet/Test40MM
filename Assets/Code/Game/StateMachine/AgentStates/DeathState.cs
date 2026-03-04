@@ -14,7 +14,6 @@ namespace Code.Scripts.StateMachine.AgentStates
             ActivateRagdoll();
             
             StopNavMeshAgent();
-            DisableNavAgentVisual();
             DisableNavAgentInput();
         }
         
@@ -33,11 +32,6 @@ namespace Code.Scripts.StateMachine.AgentStates
         private void DisableNavAgentInput()
         {
             //agent.NavAgentInput.DisableInput();
-        }
-        
-        private void DisableNavAgentVisual()
-        {
-            agent.VisualHandler.Deselect();
         }
     }
 }

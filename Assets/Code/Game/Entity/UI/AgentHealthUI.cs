@@ -17,7 +17,7 @@ public class AgentHealthUI : MonoBehaviour
     private float maxHealth;
     private float oldHealth;
     
-    private Sequence sequence;
+    // private PrimeTween.Sequence sequence;
     
     public void Observe(AgentHealth agentHealth)
     {
@@ -66,7 +66,7 @@ public class AgentHealthUI : MonoBehaviour
     {
         if (!healthBarFillImage || !healthBarEaseImage) return;
         
-        sequence.Stop();
+        // sequence.Stop();
         var ratio = health / maxHealth;
         //if (Mathf.Approximately(healthBarFillImage.fillAmount, ratio)) return;
         
@@ -74,21 +74,21 @@ public class AgentHealthUI : MonoBehaviour
         {
             healthBarEaseImage.color = healColor;
 
-            sequence = Sequence.Create()
-                .Chain(Tween.UIFillAmount(healthBarEaseImage, ratio, fillDuration, Ease.InOutSine))
-                .ChainDelay(easeDelay)
-                .Chain(Tween.UIFillAmount(healthBarFillImage, ratio, fillDuration, Ease.InOutSine))
-                .ChainCallback(() => UpdateHealthText(health, "="));
+            // sequence = Sequence.Create()
+            //     .Chain(Tween.UIFillAmount(healthBarEaseImage, ratio, fillDuration, Ease.InOutSine))
+            //     .ChainDelay(easeDelay)
+            //     .Chain(Tween.UIFillAmount(healthBarFillImage, ratio, fillDuration, Ease.InOutSine))
+            //     .ChainCallback(() => UpdateHealthText(health, "="));
         }
         else // Damage
         {
             healthBarEaseImage.color = damageColor;
 
-            sequence = Sequence.Create()
-                .Chain(Tween.UIFillAmount(healthBarFillImage, ratio, fillDuration, Ease.InOutSine))
-                .ChainDelay(easeDelay)
-                .Chain(Tween.UIFillAmount(healthBarEaseImage, ratio, fillDuration, Ease.InOutSine))
-                .ChainCallback(() => UpdateHealthText(health, "="));
+            // sequence = Sequence.Create()
+            //     .Chain(Tween.UIFillAmount(healthBarFillImage, ratio, fillDuration, Ease.InOutSine))
+            //     .ChainDelay(easeDelay)
+            //     .Chain(Tween.UIFillAmount(healthBarEaseImage, ratio, fillDuration, Ease.InOutSine))
+            //     .ChainCallback(() => UpdateHealthText(health, "="));
         }
     }
 
