@@ -1,5 +1,32 @@
 {
   "dependencies": {
+    "com.casteillet.unity-editor-tools": {
+      "version": "file:com.casteillet.unity-editor-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.gitamend.unityutils": {
+      "version": "https://github.com/adammyhre/Unity-Utils.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "ee927cd3f735f5c5b08572b4df5ba2aab03bf5ce"
+    },
+    "com.kylewbanks.scenerefattribute": {
+      "version": "https://github.com/KyleBanks/scene-ref-attribute.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8d3a0ee421588faaf373e0fe4b8f4577a522f029"
+    },
+    "com.marijnzwemmer.unity-toolbar-extender": {
+      "version": "https://github.com/marijnz/unity-toolbar-extender.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "395236f9a7a057d2362857e5bb4f3f9a808a9627"
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.10",
       "depth": 0,
