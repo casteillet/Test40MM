@@ -9,8 +9,8 @@ public class DebugLogTestCommand : INonBlockingCommand
         this.message = message;
     }
     
-    public bool CanExecute(Agent agent) => true;
-    public void Initialize(Agent agent) { }
+    public bool CanExecute(Entity entity) => true;
+    public void Initialize(Entity entity) { }
     public void Execute() => Debug.Log(message);
     public void Update() { }
     public bool IsStillValid() => true;

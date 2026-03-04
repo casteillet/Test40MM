@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Code.Scripts.StateMachine
 {
-    public class AgentStateMachine : ValidatedMonoBehaviour
+    public class EntityStateMachine : ValidatedMonoBehaviour
     {
-        [HideInInspector, SerializeField, Self] private Agent agent;
+        [HideInInspector, SerializeField, Self] private Entity entity;
         
         private bool isBeingHealed;
         private StateMachine stateMachine;
@@ -15,7 +15,7 @@ namespace Code.Scripts.StateMachine
         private void Awake()
         {
             stateMachine = new StateMachine();
-            CommandInvoker = new CommandInvoker(agent);
+            CommandInvoker = new CommandInvoker(entity);
         }
 
         public void OnStartHealingByOtherAgent()

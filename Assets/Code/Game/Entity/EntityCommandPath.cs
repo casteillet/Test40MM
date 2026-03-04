@@ -24,9 +24,9 @@ public class Waypoint
     }
 }
 
-public class AgentCommandPath : ValidatedMonoBehaviour
+public class EntityCommandPath : ValidatedMonoBehaviour
 {
-    [HideInInspector, SerializeField, Self] private Agent agent;
+    [HideInInspector, SerializeField, Self] private Entity entity;
     
     [SerializeField] private LineRenderer lineRenderer;
 
@@ -57,7 +57,7 @@ public class AgentCommandPath : ValidatedMonoBehaviour
     private void SendMovePathCommand()
     {
         currentMovePathCommand = new MovePathCommand(Waypoints);
-        agent.StateMachine.CommandInvoker.Enqueue(currentMovePathCommand);
+        entity.StateMachine.CommandInvoker.Enqueue(currentMovePathCommand);
     }
     
     private void UpdateLine()

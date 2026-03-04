@@ -6,7 +6,7 @@ namespace Code.Scripts.StateMachine.AgentStates
     {
         private readonly int attackHash = Animator.StringToHash("Attack");
         
-        public AttackState(Agent agent, Animator animator) : base(agent, animator) { }
+        public AttackState(Entity entity, Animator animator) : base(entity, animator) { }
 
         public override void OnEnter()
         {

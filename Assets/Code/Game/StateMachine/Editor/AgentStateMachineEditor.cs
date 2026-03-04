@@ -2,14 +2,14 @@ using Code.Scripts.StateMachine;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(AgentStateMachine))]
+[CustomEditor(typeof(EntityStateMachine))]
 public class AgentStateMachineEditor : Editor
 {
-    private AgentStateMachine stateMachine;
+    private EntityStateMachine stateMachine;
     
     private void OnEnable()
     {
-        stateMachine = (AgentStateMachine)target;
+        stateMachine = (EntityStateMachine)target;
     }
 
     public override void OnInspectorGUI()
@@ -48,7 +48,7 @@ public class AgentStateMachineEditor : Editor
     }
 
     [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy)]
-    static void DrawHandles(AgentStateMachine stateMachine, GizmoType gizmoType)
+    static void DrawHandles(EntityStateMachine stateMachine, GizmoType gizmoType)
     {
         if (!Application.isPlaying) return;
         

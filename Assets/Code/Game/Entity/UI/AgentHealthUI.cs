@@ -13,24 +13,24 @@ public class AgentHealthUI : MonoBehaviour
     [SerializeField] private float easeDelay = .4f;
     [SerializeField] private float fillDuration = .25f;
     
-    private AgentHealth agentHealth;
+    private Health health;
     private float maxHealth;
     private float oldHealth;
     
     // private PrimeTween.Sequence sequence;
     
-    public void Observe(AgentHealth agentHealth)
-    {
-        if (this.agentHealth)
-        {
-            this.agentHealth.OnHealthChanged -= UpdateHealth;
-            this.agentHealth.OnMaxHealthChanged -= UpdateMaxHealth;
-        }
-        
-        this.agentHealth = agentHealth;
-        this.agentHealth.OnHealthChanged += UpdateHealth;
-        this.agentHealth.OnMaxHealthChanged += UpdateMaxHealth;
-    }
+    // public void Observe(Health agentHealth)
+    // {
+    //     if (health)
+    //     {
+    //         health.OnHealthChanged -= UpdateHealth;
+    //         health.OnMaxHealthChanged -= UpdateMaxHealth;
+    //     }
+    //     
+    //     health = agentHealth;
+    //     health.OnHealthChanged += UpdateHealth;
+    //     health.OnMaxHealthChanged += UpdateMaxHealth;
+    // }
 
     private void UpdateHealth(float health)
     {

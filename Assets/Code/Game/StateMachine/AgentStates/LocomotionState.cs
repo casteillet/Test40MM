@@ -6,7 +6,7 @@ namespace Code.Scripts.StateMachine.AgentStates
     {
         private readonly int locomotionHash = Animator.StringToHash("Locomotion");
         
-        public LocomotionState(Agent agent, Animator animator) : base(agent, animator) { }
+        public LocomotionState(Entity entity, Animator animator) : base(entity, animator) { }
         
         public override void OnEnter()
         {

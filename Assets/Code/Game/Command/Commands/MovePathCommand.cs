@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 public class MovePathCommand : IInterruptibleCommand
 {
-    private Agent agent;
+    private Entity entity;
     private List<Waypoint> waypoints;
     private CommandInvoker internalInvoker;
     private NavMeshAgent navMeshAgent;
@@ -25,13 +25,13 @@ public class MovePathCommand : IInterruptibleCommand
         this.waypoints = waypoints;
     }
     
-    public bool CanExecute(Agent agent) => waypoints != null && waypoints.Count != 0;
+    public bool CanExecute(Entity entity) => waypoints != null && waypoints.Count != 0;
 
-    public void Initialize(Agent agent)
+    public void Initialize(Entity entity)
     {
-        this.agent = agent;
-        navMeshAgent =  agent.NavMeshAgent;
-        internalInvoker = new CommandInvoker(agent);
+        this.entity = entity;
+        navMeshAgent =  entity.NavMeshAgent;
+        internalInvoker = new CommandInvoker(entity);
         currentIndex = -1;
     }
     
@@ -90,7 +90,7 @@ public class MovePathCommand : IInterruptibleCommand
         }
         else if (CanAdvanceToNextWaypoint())
         {
-            if (currentIndex < waypoints.Count - 1 || agent.AgentCommandPath.EditMode != PathEditMode.None)
+            if (currentIndex < waypoints.Count - 1 || entity.EntityCommandPath.EditMode != PathEditMode.None)
             {
                 MoveToNextPosition();
             }
@@ -131,12 +131,12 @@ public class MovePathCommand : IInterruptibleCommand
         var lookAheadIndex = Mathf.Min(currentIndex + LookAheadWaypoint, waypoints.Count - 1);
         var lookTarget = waypoints[lookAheadIndex].Position;
         
-        var direction = lookTarget - agent.transform.position;
+        var direction = lookTarget - entity.transform.position;
         direction.y = 0;
         if (direction == Vector3.zero) return;
         
         var targetRotation = Quaternion.LookRotation(direction);
-        agent.transform.rotation = Quaternion.RotateTowards(agent.transform.rotation, targetRotation, navMeshAgent.angularSpeed * Time.deltaTime);
+        entity.transform.rotation = Quaternion.RotateTowards(entity.transform.rotation, targetRotation, navMeshAgent.angularSpeed * Time.deltaTime);
     }
 
     private void MoveToNextPosition()
@@ -165,7 +165,7 @@ public class MovePathCommand : IInterruptibleCommand
     
     public bool IsCompleted()
     {
-        if (agent.AgentCommandPath.EditMode != PathEditMode.None) return false;
+        if (entity.EntityCommandPath.EditMode != PathEditMode.None) return false;
         return currentIndex >= waypoints.Count && !internalInvoker.HasCurrentCommand;
     }
 

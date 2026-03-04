@@ -4,8 +4,8 @@ public class WaitableTestCommand : ICommand
 {
     private bool isCompleted = false;
     
-    public bool CanExecute(Agent agent) => true;
-    public void Initialize(Agent agent) { }
+    public bool CanExecute(Entity entity) => true;
+    public void Initialize(Entity entity) { }
     public void Execute() {}
 
     public void Update()

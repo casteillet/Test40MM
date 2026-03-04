@@ -1,4 +1,3 @@
-using System.Linq;
 using KBCore.Refs;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,7 +5,7 @@ using UnityUtils;
 
 public enum PathEditMode { None, DrawingNew, RedrawingFromExisting }
 
-public class AgentCommandPlanner : ValidatedMonoBehaviour
+public class EntityCommandPlanner : ValidatedMonoBehaviour
 {
     [SerializeField] private LayerMask agentLayer;
     [SerializeField] private LayerMask walkableLayer;
@@ -24,12 +23,12 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
     private bool hasFirstPoint;
     private bool wasSafeNavMeshPosition;
     
-    private AgentCommandPath currentPathForRotation;
+    private EntityCommandPath currentPathForRotation;
     private int currentWaypointIndexForRotation;
     private Vector3 rotationCommandStartPos;
     private bool isAwaitingRotationEnd;
     
-    private Agent targetAgent;
+    private Entity targetEntity;
 
     private void Update()
     {
@@ -145,45 +144,45 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
         }
     }
     
-    private void BeginPathDrawing(Agent agent)
+    private void BeginPathDrawing(Entity entity)
     {
         hasFirstPoint = false;
         editMode = PathEditMode.DrawingNew;
         
-        targetAgent = agent;
-        targetAgent.AgentCommandPath.ClearWaypoints();
-        targetAgent.AgentCommandPath.EditMode = PathEditMode.DrawingNew;
+        targetEntity = entity;
+        targetEntity.EntityCommandPath.ClearWaypoints();
+        targetEntity.EntityCommandPath.EditMode = PathEditMode.DrawingNew;
     }
 
     private void EndPathDrawing()
     {
         editMode = PathEditMode.None;
         hasFirstPoint = false;
-        targetAgent.AgentCommandPath.EditMode = PathEditMode.None;
+        targetEntity.EntityCommandPath.EditMode = PathEditMode.None;
     }
 
-    private bool TryGetAgent(out Agent agent)
+    private bool TryGetAgent(out Entity entity)
     {
         var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit))
         {
-            agent = hit.collider.GetComponent<Agent>();
-            return agent;
+            entity = hit.collider.GetComponent<Entity>();
+            return entity;
         }
 
-        agent = null;
+        entity = null;
         return false;
     }
 
-    private bool TryGetClosestWaypointIndex(out AgentCommandPath agentCommandPath, out int index)
+    private bool TryGetClosestWaypointIndex(out EntityCommandPath entityCommandPath, out int index)
     {
-        agentCommandPath = null;
+        entityCommandPath = null;
         index = -1;
 
         if (!RaycastLayer(walkableLayer, out var hit)) return false;
 
         var closestSqrDist = float.MaxValue;
-        AgentCommandPath closest = null;
+        EntityCommandPath closest = null;
         var closestIndex = -1;
 
         // foreach (var path in squadManager.GetAgents().Select(agent => agent.AgentCommandPath))
@@ -203,7 +202,7 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
 
         if (closest)
         {
-            agentCommandPath = closest;
+            entityCommandPath = closest;
             index = closestIndex;
             return true;
         }
@@ -234,16 +233,16 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
         void AddWaypoint(Vector3 position)
         {
             lastWaypointPosition = position;
-            targetAgent.AgentCommandPath.AppendWaypoint(position);
+            targetEntity.EntityCommandPath.AppendWaypoint(position);
             wasSafeNavMeshPosition = true;
         }
 
-        if (IsReachable(targetAgent.transform.position, hit.point, out var navMeshHit) &&
-            HasLineOfSightCapsule(targetAgent.transform.position, navMeshHit.position))
+        if (IsReachable(targetEntity.transform.position, hit.point, out var navMeshHit) &&
+            HasLineOfSightCapsule(targetEntity.transform.position, navMeshHit.position))
         {
             if (!hasFirstPoint)
             {
-                AddWaypoint(targetAgent.transform.position);
+                AddWaypoint(targetEntity.transform.position);
                 hasFirstPoint = true;
             }
 
@@ -268,8 +267,8 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
         var distance = direction.magnitude;
         direction.Normalize();
         
-        var agentRadius = targetAgent.NavMeshAgent.radius;
-        var agentHeight = targetAgent.NavMeshAgent.height;
+        var agentRadius = targetEntity.NavMeshAgent.radius;
+        var agentHeight = targetEntity.NavMeshAgent.height;
         
         var capsuleBottom = from.Add(y:.2f);
         var capsuleTop = capsuleBottom.Add(y: agentHeight - .2f);
@@ -288,8 +287,8 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
     {
         var queryFilter = new NavMeshQueryFilter
         {
-            agentTypeID = targetAgent.NavMeshAgent.agentTypeID,
-            areaMask = targetAgent.NavMeshAgent.areaMask
+            agentTypeID = targetEntity.NavMeshAgent.agentTypeID,
+            areaMask = targetEntity.NavMeshAgent.areaMask
         };
         
         if (!NavMesh.SamplePosition(targetPosition, out hit, 2f, queryFilter))
@@ -306,9 +305,9 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
         return path.status == NavMeshPathStatus.PathComplete;
     }
     
-    private bool ExistCommandAt(AgentCommandPath path, int index) => path.ExistCommandAt(index);
+    private bool ExistCommandAt(EntityCommandPath path, int index) => path.ExistCommandAt(index);
 
-    private void TryAddCommandAt(AgentCommandPath path, int index, ICommand command)
+    private void TryAddCommandAt(EntityCommandPath path, int index, ICommand command)
     {
         if (!path.ExistCommandAt(index))
         {
@@ -316,7 +315,7 @@ public class AgentCommandPlanner : ValidatedMonoBehaviour
         }
     }
 
-    private void RemoveCommandAt(AgentCommandPath path, int index) => path.RemoveCommandAt(index);
+    private void RemoveCommandAt(EntityCommandPath path, int index) => path.RemoveCommandAt(index);
 
     public void EnableInput() => inputDisabled = false;
     public void DisableInput() => inputDisabled = true;

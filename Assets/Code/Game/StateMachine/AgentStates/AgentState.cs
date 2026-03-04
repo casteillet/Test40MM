@@ -4,21 +4,21 @@ namespace Code.Scripts.StateMachine.AgentStates
 {
     public class AgentState : HierarchicalState
     {
-        private Agent agent;
+        private Entity entity;
         private Animator animator;
 
         private IdleState idleState;
         private MoveState moveState;
         private CombatState combatState;
 
-        public AgentState(Agent agent, Animator animator)
+        public AgentState(Entity entity, Animator animator)
         {
-            this.agent = agent;
+            this.entity = entity;
             this.animator = animator;
 
-            idleState = new IdleState(agent, animator);
-            moveState = new MoveState(agent, animator);
-            combatState = new CombatState(agent, animator);
+            idleState = new IdleState(entity, animator);
+            moveState = new MoveState(entity, animator);
+            combatState = new CombatState(entity, animator);
         }
 
         public override void OnEnter()
@@ -47,7 +47,7 @@ namespace Code.Scripts.StateMachine.AgentStates
 
     public class IdleState : BaseState
     {
-        public IdleState(Agent agent, Animator animator) : base(agent, animator) { }
+        public IdleState(Entity entity, Animator animator) : base(entity, animator) { }
 
         public override void OnEnter()
         {
@@ -63,7 +63,7 @@ namespace Code.Scripts.StateMachine.AgentStates
 
     public class MoveState : BaseState
     {
-        public MoveState(Agent agent, Animator animator) : base(agent, animator) { }
+        public MoveState(Entity entity, Animator animator) : base(entity, animator) { }
 
         public override void OnEnter()
         {
@@ -83,7 +83,7 @@ namespace Code.Scripts.StateMachine.AgentStates
 
     public class CombatState : BaseState
     {
-        public CombatState(Agent agent, Animator animator) : base(agent, animator) { }
+        public CombatState(Entity entity, Animator animator) : base(entity, animator) { }
 
         public override void OnEnter()
         {

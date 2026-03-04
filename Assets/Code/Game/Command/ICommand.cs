@@ -1,7 +1,7 @@
 public interface ICommand
 {
-    public bool CanExecute(Agent agent);
-    public void Initialize(Agent agent);
+    public bool CanExecute(Entity entity);
+    public void Initialize(Entity entity);
     public void Execute();
     public void Update();
     public bool IsStillValid();

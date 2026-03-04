@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class QuickLookCommand : INonBlockingCommand
 {
-    private Agent agent;
+    private Entity entity;
     private Vector3 direction;
     private int waypointsToHold;
     private int waypointsCrossed;
@@ -15,11 +15,11 @@ public class QuickLookCommand : INonBlockingCommand
 
     public void NotifyWaypointCrossed() => waypointsCrossed++;
     private bool IsExpired => waypointsCrossed >= waypointsToHold;
-    public bool CanExecute(Agent agent) => direction != Vector3.zero;
+    public bool CanExecute(Entity entity) => direction != Vector3.zero;
 
-    public void Initialize(Agent agent)
+    public void Initialize(Entity entity)
     {
-        this.agent = agent;
+        this.entity = entity;
         waypointsCrossed = 0;
     }
 
@@ -33,7 +33,7 @@ public class QuickLookCommand : INonBlockingCommand
         if (direction == Vector3.zero) return;
         
         var targetRotation = Quaternion.LookRotation(direction);
-        agent.transform.rotation = Quaternion.RotateTowards(agent.transform.rotation, targetRotation, agent.NavMeshAgent.angularSpeed * Time.deltaTime);
+        entity.transform.rotation = Quaternion.RotateTowards(entity.transform.rotation, targetRotation, entity.NavMeshAgent.angularSpeed * Time.deltaTime);
     }
 
     public bool IsStillValid() => true;

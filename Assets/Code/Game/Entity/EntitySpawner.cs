@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using KBCore.Refs;
 using UnityEngine;
 
-public class AgentSpawner : ValidatedMonoBehaviour
+public class EntitySpawner : ValidatedMonoBehaviour
 {
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private Transform uiContainer;

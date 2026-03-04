@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class LockAimCommand : INonBlockingCommand
 {
-    private Agent agent;
+    private Entity entity;
     private Vector3 direction;
 
     public LockAimCommand(Vector3 direction)
@@ -10,11 +10,11 @@ public class LockAimCommand : INonBlockingCommand
         this.direction = direction.normalized;
     }
 
-    public bool CanExecute(Agent agent) => direction != Vector3.zero;
+    public bool CanExecute(Entity entity) => direction != Vector3.zero;
 
-    public void Initialize(Agent agent)
+    public void Initialize(Entity entity)
     {
-        this.agent = agent;
+        this.entity = entity;
     }
 
     public void Execute() { }
@@ -25,7 +25,7 @@ public class LockAimCommand : INonBlockingCommand
         if (direction == Vector3.zero) return;
         
         var targetRotation = Quaternion.LookRotation(direction);
-        agent.transform.rotation = Quaternion.RotateTowards(agent.transform.rotation, targetRotation, agent.NavMeshAgent.angularSpeed * Time.deltaTime);
+        entity.transform.rotation = Quaternion.RotateTowards(entity.transform.rotation, targetRotation, entity.NavMeshAgent.angularSpeed * Time.deltaTime);
     }
 
     public bool IsStillValid() => true;

@@ -3,20 +3,20 @@ using UnityEngine;
 public class CommandInvoker
 {
     private ICommand currentCommand;
-    private Agent agent;
+    private Entity entity;
     
 #if UNITY_EDITOR
     public ICommand CurrentCommand => currentCommand;
 #endif
     
-    public CommandInvoker(Agent agent)
+    public CommandInvoker(Entity entity)
     {
-        this.agent = agent;
+        this.entity = entity;
     }
     
     public void Enqueue(ICommand command)
     {
-        if (!command.CanExecute(agent))
+        if (!command.CanExecute(entity))
         {
             Debug.LogWarning($"[CommandInvoker] Cannot execute command: {command}");
             return;
@@ -24,7 +24,7 @@ public class CommandInvoker
 
         CancelCurrentCommand();
 
-        command.Initialize(agent);
+        command.Initialize(entity);
         currentCommand = command;
         currentCommand.Execute();
         Debug.Log($"[CommandInvoker] Executing command: {currentCommand}");

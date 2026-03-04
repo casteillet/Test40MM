@@ -14,7 +14,7 @@ namespace Code.Scripts.StateMachine.AgentStates
 
         public bool IsInterrupted => isInterrupted;
 
-        public HealingState(Agent agent, Animator animator) : base(agent, animator) { }
+        public HealingState(Entity entity, Animator animator) : base(entity, animator) { }
 
         public void SetParent(HierarchicalState parent) => this.parent = parent;
 

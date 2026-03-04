@@ -4,14 +4,14 @@ namespace Code.Scripts.StateMachine.AgentStates
 {
     public abstract class BaseState : IState
     {
-        protected readonly Agent agent;
+        protected readonly Entity Entity;
         protected readonly Animator animator;
         
         protected const float crossFadeDuration = 0.1f;
         
-        protected BaseState(Agent agent, Animator animator)
+        protected BaseState(Entity entity, Animator animator)
         {
-            this.agent = agent;
+            this.Entity = entity;
             this.animator = animator;
         }
 
