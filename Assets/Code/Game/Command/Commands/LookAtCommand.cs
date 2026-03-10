@@ -1,36 +1,27 @@
 using UnityEngine;
 
-public class LookAtCommand : INonBlockingCommand
+public class LookAtCommand : ICommand
 {
     private Entity entity;
-    private Vector3 targetPosition;
+    private Transform target;
 
-    public LookAtCommand(Vector3 targetPosition)
+    public bool IsFinished => false;
+
+    public LookAtCommand(Transform target)
     {
-        this.targetPosition = targetPosition;
+        this.target = target;
     }
-
-    public bool CanExecute(Entity entity) => true;
 
     public void Initialize(Entity entity)
     {
         this.entity = entity;
     }
 
-    public void Execute() { }
-
     public void Update()
     {
-        var direction = targetPosition - entity.transform.position;
-        direction.y = 0;
-        
-        if (direction == Vector3.zero) return;
-        
-        var targetRotation = Quaternion.LookRotation(direction);
-        entity.transform.rotation = Quaternion.RotateTowards(entity.transform.rotation, targetRotation, entity.NavMeshAgent.angularSpeed * Time.deltaTime);
-    }
+        var dir = target.position - entity.transform.position;
 
-    public bool IsStillValid() => true;
-    public bool IsCompleted() => false;
-    public void Cancel() { }
+        // Move aim of this entity if it can
+        //entity.transform.rotation = Quaternion.LookRotation(dir);
+    }
 }
