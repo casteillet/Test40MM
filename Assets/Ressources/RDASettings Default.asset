@@ -26,7 +26,7 @@ MonoBehaviour:
       prefab: {fileID: 8765543467267073045, guid: 858e738f85e0d994abcc5c73dfc6916e, type: 3}
   actionDisplayFadeInTime: 0.3
   actionDisplayFadeTime: 0.5
-  useEmbeddedEventSystem: 1
+  useEmbeddedEventSystem: 0
   eventSystemPrefab: {fileID: 4391802490427358298, guid: fad178ee18eb2a0409ceda6610266cde, type: 3}
   enableInputNavigation: 1
   useInputSystemLayer: 0

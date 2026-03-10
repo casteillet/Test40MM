@@ -5,7 +5,6 @@ public class PathDrawingTool : IPlannerTool
     private Entity selectedEntity;
     private EntityPath currentEntityPath;
     private Camera camera;
-    private const float waypointSpacing = .5f;
 
     public PathDrawingTool(Camera cam)
     {
@@ -15,6 +14,7 @@ public class PathDrawingTool : IPlannerTool
     public void SetEntity(Entity entity)
     {
         selectedEntity = entity;
+        currentEntityPath = new EntityPath();
     }
 
     public void HandleInput()
@@ -23,15 +23,10 @@ public class PathDrawingTool : IPlannerTool
 
         if (Input.GetMouseButtonDown(0))
         {
-            currentEntityPath = new EntityPath();
-        }
-
-        if (Input.GetMouseButton(0))
-        {
             AddWaypointFromMouse();
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonDown(1))
         {
             FinishPath();
         }
@@ -43,11 +38,7 @@ public class PathDrawingTool : IPlannerTool
 
         if (!Physics.Raycast(ray, out var hit)) return;
 
-        var distance = Vector3.Distance(currentEntityPath.Waypoints[^1].Position, hit.point);
-        if (currentEntityPath.Waypoints.Count == 0 || distance > waypointSpacing)
-        {
-            currentEntityPath.Waypoints.Add(new Waypoint(hit.point));
-        }
+        currentEntityPath.Waypoints.Add(new Waypoint(hit.point));
     }
 
     private void FinishPath()
@@ -56,6 +47,6 @@ public class PathDrawingTool : IPlannerTool
 
         selectedEntity.PathFollower.SetPath(currentEntityPath);
 
-        currentEntityPath = null;
+        currentEntityPath = new EntityPath();
     }
 }

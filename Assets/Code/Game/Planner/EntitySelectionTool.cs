@@ -27,7 +27,7 @@ public class EntitySelectionTool : IPlannerTool
         {
             var entity = hit.collider.GetComponent<Entity>();
 
-            if (entity != null)
+            if (entity)
             {
                 SelectedEntity = entity;
             }

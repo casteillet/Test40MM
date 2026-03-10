@@ -3,6 +3,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     public EntityFactory factory;
+    public Camera cam;
 
     private EntityData selectedEntityData;
     private EntityThreat selectedThreat;
@@ -23,9 +24,9 @@ public class SpawnManager : MonoBehaviour
 
     private void TrySpawn()
     {
-        if (selectedEntityData == null) return;
+        if (!selectedEntityData) return;
 
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = cam.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out var hit))
         {
             factory.Spawn(selectedEntityData, hit.point, selectedThreat);

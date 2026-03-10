@@ -7,7 +7,7 @@ public class EntityFactory
         var go = Object.Instantiate(data.prefab, position, Quaternion.identity);
 
         var entity = go.GetComponent<Entity>();
-        entity.Initialize(threat);
+        entity.Initialize(data, threat);
 
         ApplyData(entity, data);
 
@@ -16,13 +16,6 @@ public class EntityFactory
 
     private void ApplyData(Entity entity, EntityData data)
     {
-        var navMeshAgent = entity.NavMeshAgent;
-        if (navMeshAgent)
-        {
-            navMeshAgent.speed = data.moveSpeed;
-            navMeshAgent.angularSpeed = data.angularSpeed;
-        }
-
         var health = entity.Health;
         if (health)
         {
