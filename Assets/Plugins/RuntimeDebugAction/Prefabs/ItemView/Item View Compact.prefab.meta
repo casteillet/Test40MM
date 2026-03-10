@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e0bccccd0854e3c479df02015d4bd5a2
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/ItemView/Item View Compact.prefab
+  uploadId: 409774

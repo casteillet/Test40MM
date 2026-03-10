@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1e73a1be2fd063646ac75c76b6589e89
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/UI Compact.prefab
+  uploadId: 409774

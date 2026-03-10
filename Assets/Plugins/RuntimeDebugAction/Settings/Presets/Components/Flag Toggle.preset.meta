@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d8e4b8328d224e541aedca8195c05d63
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2655988077585873504
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Settings/Presets/Components/Flag Toggle.preset
+  uploadId: 409774

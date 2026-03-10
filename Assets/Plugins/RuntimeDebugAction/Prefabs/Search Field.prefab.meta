@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 48530f7af59ca8f40a00c556407bb631
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/Search Field.prefab
+  uploadId: 409774

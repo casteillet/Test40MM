@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 11f037fcfadef8e468821bb92182ab2d
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Runtime/com.bennykok.runtime-debug-action.asmdef
+  uploadId: 409774

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 66d19eb067563524bb8665ef9fab83a7
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Demo/Dashsu Cube/Scenes/Level1.unity
+  uploadId: 409774

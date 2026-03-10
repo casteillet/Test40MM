@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 64944c7c38026a647924aeae870c874d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/Scrollable Text Field.prefab
+  uploadId: 409774

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e93221dc7693cf44eab36053c6a35742
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/UI Default World Space.prefab
+  uploadId: 409774

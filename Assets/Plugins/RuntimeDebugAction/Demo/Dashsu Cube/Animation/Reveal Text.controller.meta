@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: aa9471a57b2f8e84f9229a794fd00a82
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Demo/Dashsu Cube/Animation/Reveal
+    Text.controller
+  uploadId: 409774

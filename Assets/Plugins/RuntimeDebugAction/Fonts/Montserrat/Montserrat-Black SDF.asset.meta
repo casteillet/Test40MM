@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: a48514571bbdf4846a3d6d4275a6413d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Fonts/Montserrat/Montserrat-Black
+    SDF.asset
+  uploadId: 409774

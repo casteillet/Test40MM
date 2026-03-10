@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0828b88c0fedd3f46a267b8797c25380
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/README.md
+  uploadId: 409774

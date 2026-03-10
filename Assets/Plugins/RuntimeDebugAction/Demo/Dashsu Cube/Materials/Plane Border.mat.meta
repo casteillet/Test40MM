@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f7a428f417857784c8b7c235e16a99fb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Demo/Dashsu Cube/Materials/Plane Border.mat
+  uploadId: 409774

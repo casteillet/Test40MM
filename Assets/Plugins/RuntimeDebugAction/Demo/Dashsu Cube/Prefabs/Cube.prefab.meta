@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2defacdea23b3744dafc322bf3fafd16
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Demo/Dashsu Cube/Prefabs/Cube.prefab
+  uploadId: 409774

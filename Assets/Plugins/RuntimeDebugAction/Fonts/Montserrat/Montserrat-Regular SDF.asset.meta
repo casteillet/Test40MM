@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 6c7c7bd9ce455de4880de30bf445d972
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Fonts/Montserrat/Montserrat-Regular
+    SDF.asset
+  uploadId: 409774

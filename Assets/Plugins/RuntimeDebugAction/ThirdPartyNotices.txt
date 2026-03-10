@@ -1,0 +1,4 @@
+This asset is governed by the Asset Store EULA; however, the following components are governed by the licenses indicated below:
+
+A. UnityRecyclingListView (https://github.com/sinbad/UnityRecyclingListView/blob/master/Source/RecyclingListView.cs) in BennyKok.RuntimeDebug.Components.UI.ListView
+The MIT License (MIT)

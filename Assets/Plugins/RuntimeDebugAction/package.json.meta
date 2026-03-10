@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6aa9fda6188f6e8489e35176fbf53003
+PackageManifestImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/package.json
+  uploadId: 409774

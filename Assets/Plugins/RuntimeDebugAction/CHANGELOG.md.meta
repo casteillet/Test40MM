@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4deeceb31de654f498f45c00136f42c9
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/CHANGELOG.md
+  uploadId: 409774

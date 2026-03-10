@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 858e738f85e0d994abcc5c73dfc6916e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/UI Compact Bottom.prefab
+  uploadId: 409774

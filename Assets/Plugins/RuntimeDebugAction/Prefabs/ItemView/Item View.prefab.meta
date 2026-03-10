@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 109c1b1982f0b0346bf657ad20970425
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/ItemView/Item View.prefab
+  uploadId: 409774

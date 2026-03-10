@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c0e5375d5dba4ac4eb49273c712ec70a
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/EmbeddedEventSystemInputSystem.prefab
+  uploadId: 409774

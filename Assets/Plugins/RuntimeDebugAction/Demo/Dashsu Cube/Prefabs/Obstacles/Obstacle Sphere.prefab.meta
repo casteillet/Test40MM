@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 55221587b4af66340b01f561f7c7f0f9
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Demo/Dashsu Cube/Prefabs/Obstacles/Obstacle
+    Sphere.prefab
+  uploadId: 409774

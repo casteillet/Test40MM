@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: db87c55fd26d159489601db07eba2d60
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Fonts/Raleway/Raleway-Regular SDF.asset
+  uploadId: 409774

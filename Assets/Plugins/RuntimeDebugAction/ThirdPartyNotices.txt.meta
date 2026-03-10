@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8d9b466ed864d9446a0df336807b076e
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/ThirdPartyNotices.txt
+  uploadId: 409774

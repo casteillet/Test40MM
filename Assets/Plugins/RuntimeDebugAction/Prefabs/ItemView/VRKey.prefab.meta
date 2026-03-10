@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d5e72dd8f0aa73241ba3b69325babb66
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 183545
+  packageName: Runtime Debug Action - Desktop | Mobile | Input System
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/RuntimeDebugAction/Prefabs/ItemView/VRKey.prefab
+  uploadId: 409774
