@@ -6,7 +6,7 @@ public class PathFollower : MonoBehaviour
     private Entity entity;
     private NavMeshAgent agent;
 
-    private Path currentPath;
+    private EntityPath currentEntityPath;
     private int currentWaypointIndex;
 
     private const float WaypointReachedDistance = .15f;
@@ -17,12 +17,12 @@ public class PathFollower : MonoBehaviour
     //     agent = GetComponent<NavMeshAgent>();
     // }
 
-    public void SetPath(Path path)
+    public void SetPath(EntityPath entityPath)
     {
-        currentPath = path;
+        currentEntityPath = entityPath;
         currentWaypointIndex = 0;
 
-        if (currentPath.Waypoints.Count > 0)
+        if (currentEntityPath.Waypoints.Count > 0)
         {
             MoveToWaypoint();
         }
@@ -30,7 +30,7 @@ public class PathFollower : MonoBehaviour
 
     private void Update()
     {
-        if (currentPath == null) return;
+        if (currentEntityPath == null) return;
 
         if (!agent.pathPending && agent.remainingDistance <= WaypointReachedDistance)
         {
@@ -40,20 +40,20 @@ public class PathFollower : MonoBehaviour
 
     private void MoveToWaypoint()
     {
-        if (currentWaypointIndex >= currentPath.Waypoints.Count) return;
+        if (currentWaypointIndex >= currentEntityPath.Waypoints.Count) return;
 
-        agent.SetDestination(currentPath.Waypoints[currentWaypointIndex].Position);
+        agent.SetDestination(currentEntityPath.Waypoints[currentWaypointIndex].Position);
     }
 
     private void ReachWaypoint()
     {
-        var waypoint = currentPath.Waypoints[currentWaypointIndex];
+        var waypoint = currentEntityPath.Waypoints[currentWaypointIndex];
 
         ExecuteWaypointCommands(waypoint);
 
         currentWaypointIndex++;
 
-        if (currentWaypointIndex < currentPath.Waypoints.Count)
+        if (currentWaypointIndex < currentEntityPath.Waypoints.Count)
         {
             MoveToWaypoint();
         }

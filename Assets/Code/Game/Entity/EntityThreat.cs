@@ -1,4 +1,4 @@
-public enum EntityFaction
+public enum EntityThreat
 {
     Ally,
     Enemy,

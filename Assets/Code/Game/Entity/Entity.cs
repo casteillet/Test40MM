@@ -5,20 +5,20 @@ using UnityEngine.AI;
 [SelectionBase]
 public class Entity : ValidatedMonoBehaviour
 {
-    public EntityFaction Faction { get; private set; }
-
-    public NavMeshAgent Agent { get; private set; }
-    public PathFollower PathFollower { get; private set; }
+    [field: SerializeField, Self] public EntityThreat Threat { get; private set; }
+    [field: SerializeField, Self] public NavMeshAgent NavMeshAgent { get; private set; }
+    [field: SerializeField, Self] public PathFollower PathFollower { get; private set; }
+    [field: SerializeField, Self] public Health Health { get; private set; }
     public CommandInvoker CommandInvoker { get; private set; }
-    //[field: HideInInspector, SerializeField, Self] public Health Health { get; private set; }
 
-    public void Initialize(EntityFaction faction)
+    public void Initialize(EntityThreat threat)
     {
-        Faction = faction;
+        CommandInvoker = new CommandInvoker(this);
+        Threat = threat;
     }
 
-    public void SetFaction(EntityFaction faction)
+    public void SetFaction(EntityThreat threat)
     {
-        Faction = faction;
+        Threat = threat;
     }
 }

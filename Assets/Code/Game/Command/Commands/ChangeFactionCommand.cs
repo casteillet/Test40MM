@@ -1,19 +1,19 @@
 public class ChangeFactionCommand : ICommand
 {
     private Entity entity;
-    private EntityFaction faction;
+    private EntityThreat threat;
 
     public bool IsFinished => true;
 
-    public ChangeFactionCommand(EntityFaction faction)
+    public ChangeFactionCommand(EntityThreat threat)
     {
-        this.faction = faction;
+        this.threat = threat;
     }
 
     public void Initialize(Entity entity)
     {
         this.entity = entity;
-        entity.SetFaction(faction);
+        entity.SetFaction(threat);
     }
 
     public void Update() { }
