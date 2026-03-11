@@ -25,8 +25,10 @@ public class ConnectionUI : RuntimeDebugBehaviour
         stopButton.onClick.AddListener(Stop);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
+        
         startHostButton.onClick.RemoveListener(StartHost);
         startClientButton.onClick.RemoveListener(StartClient);
         

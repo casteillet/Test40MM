@@ -8,12 +8,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(NetworkManager))]
 public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
 {
-    [Serializable]
-    public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData>
-    {
-    };
+    [Serializable] public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData> { };
 
-    NetworkManager m_NetworkManager;
+    private NetworkManager networkManager;
     
     [SerializeField]
     [Tooltip("If true NetworkDiscovery will make the server visible and answer to client broadcasts as soon as netcode starts running as server.")]
@@ -23,18 +20,18 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
 
     public ServerFoundEvent OnServerFound;
     
-    private bool m_HasStartedWithServer = false;
+    private bool m_HasStartedWithServer;
 
-    public void Awake()
+    private void Start()
     {
-        m_NetworkManager = GetComponent<NetworkManager>();
+        networkManager = NetworkManager.Singleton;
     }
 
     public void Update()
     {
         if (m_StartWithServer && m_HasStartedWithServer == false && IsRunning == false)
         {
-            if (m_NetworkManager.IsServer)
+            if (networkManager.IsServer)
             {
                 StartServer();
                 m_HasStartedWithServer = true;
@@ -47,7 +44,7 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
         response = new DiscoveryResponseData()
         {
             ServerName = ServerName,
-            Port = ((UnityTransport) m_NetworkManager.NetworkConfig.NetworkTransport).ConnectionData.Port,
+            Port = ((UnityTransport) networkManager.NetworkConfig.NetworkTransport).ConnectionData.Port,
         };
         return true;
     }

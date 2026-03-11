@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -11,8 +10,6 @@ using UnityEditor;
 using UnityEditor.Events;
 #endif
 
-[RequireComponent(typeof(ExampleNetworkDiscovery))]
-[RequireComponent(typeof(NetworkManager))]
 public class ExampleNetworkDiscoveryHud : MonoBehaviour
 {
     [SerializeField] private ExampleNetworkDiscovery networkDiscovery;
@@ -53,9 +50,15 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
 
         if (networkManager.IsServer || networkManager.IsClient)
         {
-            if (networkManager.IsServer)
+            // if (networkManager.IsServer)
+            // {
+            //     ServerControlsGUI();
+            // }
+            
+            if (GUILayout.Button("Shutdown"))
             {
-                ServerControlsGUI();
+                networkManager.Shutdown();
+                networkDiscovery.StopDiscovery();
             }
         }
         else
@@ -68,6 +71,16 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
 
     private void ClientSearchGUI()
     {
+        if (GUILayout.Button("Start Server"))
+        {
+            networkManager.StartServer();
+        }
+        
+        if (GUILayout.Button("Start Host"))
+        {
+            networkManager.StartHost();
+        }
+        
         if (networkDiscovery.IsRunning)
         {
             if (GUILayout.Button("Stop Client Discovery"))
@@ -86,7 +99,7 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
             
             foreach (var discoveredServer in discoveredServers)
             {
-                if (GUILayout.Button($"{discoveredServer.Value.ServerName}[{discoveredServer.Key.ToString()}]"))
+                if (GUILayout.Button($"{discoveredServer.Value.ServerName}[{discoveredServer.Key}]"))
                 {
                     var transport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
                     transport.SetConnectionData(discoveredServer.Key.ToString(), discoveredServer.Value.Port);
