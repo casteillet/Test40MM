@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 9021161152912401630}
   - component: {fileID: 2329023175558218120}
   - component: {fileID: 6034402818927083484}
-  - component: {fileID: 4557496688754525872}
   - component: {fileID: 8637773344345071433}
   - component: {fileID: 4946548458246486975}
   m_Layer: 0
@@ -71,31 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity
   <Threat>k__BackingField: 0
-  <NavMeshAgent>k__BackingField: {fileID: 0}
-  <PathFollower>k__BackingField: {fileID: 0}
-  <Health>k__BackingField: {fileID: 0}
---- !u!195 &4557496688754525872
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5330760289952115970}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  <PathFollower>k__BackingField: {fileID: 8637773344345071433}
+  <Health>k__BackingField: {fileID: 4946548458246486975}
 --- !u!114 &8637773344345071433
 MonoBehaviour:
   m_ObjectHideFlags: 0
