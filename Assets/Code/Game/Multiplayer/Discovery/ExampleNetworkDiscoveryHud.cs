@@ -103,6 +103,7 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
                 {
                     var transport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
                     transport.SetConnectionData(discoveredServer.Key.ToString(), discoveredServer.Value.Port);
+                    Debug.Log($"Address: {discoveredServer.Key}, Port: {discoveredServer.Value.Port}");
                     networkManager.StartClient();
                 }
             }

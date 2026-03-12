@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -25,6 +26,10 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
     private void Start()
     {
         networkManager = NetworkManager.Singleton;
+        
+        var unityTransport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
+        var ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+        unityTransport.SetConnectionData(ipAddress, Port);
     }
 
     public void Update()

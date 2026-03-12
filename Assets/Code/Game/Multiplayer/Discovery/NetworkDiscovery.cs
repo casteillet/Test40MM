@@ -26,6 +26,8 @@ public abstract class NetworkDiscovery<TBroadCast, TResponse> : MonoBehaviour
     [SerializeField]
     long m_UniqueApplicationId;
 
+    protected ushort Port => m_Port;
+    
     /// <summary>
     /// Gets a value indicating whether the discovery is running.
     /// </summary>
