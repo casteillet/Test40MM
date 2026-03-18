@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LobbyManager : NetworkSingleton<LobbyManager>
@@ -11,27 +10,21 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
     public event Action<Dictionary<string, Player>> OnPlayerListChanged;
     public event Action<bool> OnAllPlayersReadyChanged;
     
-    // TODO: Check correct execution if can access NetworkManager is not too late
-    public override void OnNetworkSpawn()
-    {
-        if (!IsServer) return;
-        
-        NetworkManager.Singleton.OnConnectionEvent += OnConnectionEvent;
-    }
-
-    // TODO: Check correct execution if can access NetworkManager is not too late
-    public override void OnNetworkDespawn()
-    {
-        if (!IsServer) return;
-        
-        NetworkManager.Singleton.OnConnectionEvent -= OnConnectionEvent;
-    }
-
     public void RegisterPlayer(Player player)
     {
         var id = player.playerId.Value.ToString();
         
-        playersById[id] = player;
+        if (playersById.TryGetValue(id, out var existingPlayer))
+        {
+            playersById[id] = player;
+
+            // TODO: Reassign player values, by calling a load system to the local player
+            player.spawn.Value = existingPlayer.spawn.Value;
+        }
+        else
+        {
+            playersById.Add(id, player);
+        }
 
         OnPlayerListChanged?.Invoke(playersById);
     }
@@ -43,25 +36,6 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         playersById.Remove(id);
         
         OnPlayerListChanged?.Invoke(playersById);
-    }
-    
-    private void OnConnectionEvent(NetworkManager networkManager, ConnectionEventData connectionEventData)
-    {
-        foreach (var playerById in playersById)
-        {
-            if (playerById.Value.OwnerClientId != connectionEventData.ClientId) continue;
-            
-            if (connectionEventData.EventType != ConnectionEvent.ClientDisconnected)
-            {
-                Debug.Log($"Player {playerById.Key} disconnected");
-            }
-            else if (connectionEventData.EventType == ConnectionEvent.ClientConnected)
-            {
-                Debug.Log($"Player {playerById.Key} connected");
-            }
-                
-            return;
-        }
     }
 
     public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
@@ -105,5 +79,10 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         if (!AllPlayersReady()) return;
 
         NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
+    }
+    
+    public Dictionary<string, Player> GetPlayers()
+    {
+        return playersById;
     }
 }

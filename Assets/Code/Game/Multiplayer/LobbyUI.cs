@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
@@ -27,9 +26,12 @@ public class LobbyUI : MonoBehaviour
             
             startButton.onClick.AddListener(OnStartClicked);
         }
+        else
+        {
+            OnPlayerListChanged(LobbyManager.Instance.GetPlayers());
+        }
     }
 
-    // TODO: Check correct execution if can access NetworkManager is not too late
     private void OnDestroy()
     {
         if (!LobbyManager.Instance) return;
@@ -48,39 +50,17 @@ public class LobbyUI : MonoBehaviour
     {
         RefreshPlayerList(players);
     }
-
+    
     private void RefreshPlayerList(Dictionary<string, Player> playersById)
     {
         playerListContainer.DestroyChildren();
-        
+
         foreach (var playerById in playersById)
         {
-            var playerId = playerById.Key;
-            var player = playerById.Value;
-
             var go = Instantiate(playerLobbyPrefab, playerListContainer);
 
-            var text = go.GetComponentInChildren<TextMeshProUGUI>();
-            var dropdown = go.GetComponentInChildren<TMP_Dropdown>();
-
-            text.text = playerId;
-            dropdown.value = (int)player.spawn.Value;
-            dropdown.interactable = isServer;
-
-            if (isServer)
-            {
-                dropdown.onValueChanged.AddListener(value =>
-                {
-                    LobbyManager.Instance.AssignSpawn(playerId, (SpawnPosition)value);
-                });
-            }
-            else
-            {
-                player.spawn.OnValueChanged += (_, newValue) =>
-                {
-                    dropdown.SetValueWithoutNotify((int)newValue);
-                };
-            }
+            var item = go.GetComponent<LobbyPlayerUI>();
+            item.Initialize(playerById.Value, playerById.Key, isServer);
         }
     }
 
