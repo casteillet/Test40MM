@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -17,6 +18,13 @@ public class LobbyPlayerUI : MonoBehaviour
         this.isServer = isServer;
 
         playerIdText.text = playerId;
+        
+        dropdown.options = new List<TMP_Dropdown.OptionData>
+        {
+            new (nameof(SpawnPosition.None)),
+            new (nameof(SpawnPosition.Front)),
+            new (nameof(SpawnPosition.Back))
+        };
 
         dropdown.SetValueWithoutNotify((int)player.spawn.Value);
         dropdown.interactable = isServer;

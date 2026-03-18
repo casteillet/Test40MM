@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-    public NetworkVariable<FixedString128Bytes> playerId = new();
+    [HideInInspector] public NetworkVariable<FixedString128Bytes> playerId = new();
     public NetworkVariable<SpawnPosition> spawn = new();
 
     public override void OnNetworkSpawn()

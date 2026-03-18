@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LobbyManager : NetworkSingleton<LobbyManager>
 {
-    private readonly Dictionary<string, Player> playersById = new();
+    private readonly Dictionary<string, PlayerData> playerDataById = new();
+    private readonly Dictionary<ulong, Player> playersByClientId = new();
 
     public event Action<Dictionary<string, Player>> OnPlayerListChanged;
     public event Action<bool> OnAllPlayersReadyChanged;
@@ -13,48 +15,73 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
     public void RegisterPlayer(Player player)
     {
         var id = player.playerId.Value.ToString();
+        var clientId = player.OwnerClientId;
         
-        if (playersById.TryGetValue(id, out var existingPlayer))
+        playersByClientId[clientId] = player;
+        
+        if (playerDataById.TryGetValue(id, out var data)) // Rejoin existing session
         {
-            playersById[id] = player;
+            data.ClientId = clientId;
 
-            // TODO: Reassign player values, by calling a load system to the local player
-            player.spawn.Value = existingPlayer.spawn.Value;
+            player.spawn.Value = data.Spawn;
         }
-        else
+        else // New player
         {
-            playersById.Add(id, player);
+            var newData = new PlayerData
+            {
+                PlayerId = id,
+                Spawn = SpawnPosition.None,
+                ClientId = clientId
+            };
+
+            playerDataById.Add(id, newData);
         }
 
-        OnPlayerListChanged?.Invoke(playersById);
+        Debug.Log($"Player {id} connected");
+
+        OnPlayerListChanged?.Invoke(GetPlayers());
+        OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
     
     public void UnregisterPlayer(Player player)
     {
         var id = player.playerId.Value.ToString();
-
-        playersById.Remove(id);
         
-        OnPlayerListChanged?.Invoke(playersById);
-    }
+        if (playerDataById.TryGetValue(id, out var data))
+        {
+            playersByClientId.Remove(data.ClientId);
+            data.ClientId = 0;
+        }
 
+        Debug.Log($"Player {id} disconnected");
+
+        OnPlayerListChanged?.Invoke(GetPlayers());
+        OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
+    }
+    
     public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
     {
         if (!IsServer) return;
 
         if (spawnPosition != SpawnPosition.None && IsSpawnTaken(spawnPosition)) return;
 
-        if (playersById.TryGetValue(playerId, out var player))
+        if (playerDataById.TryGetValue(playerId, out var data))
         {
-            player.spawn.Value = spawnPosition;
+            data.Spawn = spawnPosition;
+
+            if (playersByClientId.TryGetValue(data.ClientId, out var player))
+            {
+                player.spawn.Value = spawnPosition;
+            }
         }
-        
+
+        // OnPlayerListChanged?.Invoke(GetPlayers());
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
 
     private bool IsSpawnTaken(SpawnPosition spawnPosition)
     {
-        foreach (var player in playersById.Values)
+        foreach (var player in playersByClientId.Values)
         {
             if (player.spawn.Value == spawnPosition) return true;
         }
@@ -64,7 +91,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
 
     private bool AllPlayersReady()
     {
-        foreach (var player in playersById.Values)
+        foreach (var player in playersByClientId.Values)
         {
             if (player.spawn.Value == SpawnPosition.None) return false;
         }
@@ -83,6 +110,16 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
     
     public Dictionary<string, Player> GetPlayers()
     {
-        return playersById;
+        var result = new Dictionary<string, Player>();
+
+        foreach (var data in playerDataById.Values)
+        {
+            if (playersByClientId.TryGetValue(data.ClientId, out var player))
+            {
+                result[data.PlayerId] = player;
+            }
+        }
+
+        return result;
     }
 }
