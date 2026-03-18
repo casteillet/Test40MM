@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityUtils;
 
 [RequireComponent(typeof(NetworkManager))]
 public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
@@ -28,13 +29,22 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
         networkManager = NetworkManager.Singleton;
         
         var unityTransport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
+
         var ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Ethernet);
+        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (ipAddress.IsNullOrEmpty())
+        {
+            ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+        }
+#endif
+        
         unityTransport.SetConnectionData(ipAddress, Port);
     }
 
     public void Update()
     {
-        if (m_StartWithServer && m_HasStartedWithServer == false && IsRunning == false)
+        if (m_StartWithServer && !m_HasStartedWithServer && !IsRunning)
         {
             if (networkManager.IsServer)
             {
