@@ -9,38 +9,29 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
     private readonly Dictionary<string, Player> playersById = new();
 
     public event Action<Dictionary<string, Player>> OnPlayerListChanged;
-    public event Action<bool> OnPlayerReady;
+    public event Action<bool> OnAllPlayersReadyChanged;
     
     // TODO: Check correct execution if can access NetworkManager is not too late
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
         
-        // TODO: Replace by OnConnectionEvent instead
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+        NetworkManager.Singleton.OnConnectionEvent += OnConnectionEvent;
     }
-    
+
     // TODO: Check correct execution if can access NetworkManager is not too late
     public override void OnNetworkDespawn()
     {
         if (!IsServer) return;
         
-        // TODO: Replace by OnConnectionEvent instead
-        NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        NetworkManager.Singleton.OnConnectionEvent -= OnConnectionEvent;
     }
 
     public void RegisterPlayer(Player player)
     {
         var id = player.playerId.Value.ToString();
-
-        if (playersById.ContainsKey(id))
-        {
-            playersById[id] = player;
-        }
-        else
-        {
-            playersById.Add(id, player);
-        }
+        
+        playersById[id] = player;
 
         OnPlayerListChanged?.Invoke(playersById);
     }
@@ -53,17 +44,38 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         
         OnPlayerListChanged?.Invoke(playersById);
     }
-
-    private void OnClientDisconnected(ulong clientId)
+    
+    private void OnConnectionEvent(NetworkManager networkManager, ConnectionEventData connectionEventData)
     {
         foreach (var playerById in playersById)
         {
-            if (playerById.Value.OwnerClientId == clientId)
+            if (playerById.Value.OwnerClientId != connectionEventData.ClientId) continue;
+            
+            if (connectionEventData.EventType != ConnectionEvent.ClientDisconnected)
             {
                 Debug.Log($"Player {playerById.Key} disconnected");
-                return;
             }
+            else if (connectionEventData.EventType == ConnectionEvent.ClientConnected)
+            {
+                Debug.Log($"Player {playerById.Key} connected");
+            }
+                
+            return;
         }
+    }
+
+    public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
+    {
+        if (!IsServer) return;
+
+        if (spawnPosition != SpawnPosition.None && IsSpawnTaken(spawnPosition)) return;
+
+        if (playersById.TryGetValue(playerId, out var player))
+        {
+            player.spawn.Value = spawnPosition;
+        }
+        
+        OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
 
     private bool IsSpawnTaken(SpawnPosition spawnPosition)
@@ -74,20 +86,6 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         }
         
         return false;
-    }
-
-    public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
-    {
-        if (!IsServer) return;
-
-        if (IsSpawnTaken(spawnPosition)) return;
-
-        if (playersById.TryGetValue(playerId, out var player))
-        {
-            player.spawn.Value = spawnPosition;
-        }
-        
-        OnPlayerReady?.Invoke(AllPlayersReady());
     }
 
     private bool AllPlayersReady()
@@ -106,6 +104,6 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         
         if (!AllPlayersReady()) return;
 
-        NetworkManager.Singleton.SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 }

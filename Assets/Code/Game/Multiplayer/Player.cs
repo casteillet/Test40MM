@@ -14,11 +14,6 @@ public class Player : NetworkBehaviour
             var id = GetOrCreatePlayerId();
             SetPlayerIdServerRpc(id);
         }
-
-        if (IsServer)
-        {
-            LobbyManager.Instance.RegisterPlayer(this);
-        }
     }
 
     public override void OnNetworkDespawn()
@@ -33,6 +28,8 @@ public class Player : NetworkBehaviour
     private void SetPlayerIdServerRpc(string id)
     {
         playerId.Value = id;
+        
+        LobbyManager.Instance.RegisterPlayer(this);
     }
 
     private string GetOrCreatePlayerId()

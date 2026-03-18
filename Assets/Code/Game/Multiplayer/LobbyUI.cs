@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using NaughtyAttributes;
 using TMPro;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
@@ -14,32 +11,37 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Transform playerListContainer;
     [SerializeField] private GameObject playerLobbyPrefab;
     
-    private readonly bool isServer = NetworkManager.Singleton.IsServer;
-    
+    private bool isServer;
+
     private void Start()
     {
+        isServer = NetworkManager.Singleton.IsServer;
         
-        startButton.gameObject.SetActive(!isServer);
+        startButton.gameObject.SetActive(isServer);
         
         LobbyManager.Instance.OnPlayerListChanged += OnPlayerListChanged;
-        
-        if (!isServer) return;
-        
-        LobbyManager.Instance.OnPlayerReady += OnPlayerReady;
-        
-        startButton.onClick.AddListener(OnStartClicked);
+
+        if (isServer)
+        {
+            LobbyManager.Instance.OnAllPlayersReadyChanged += OnAllPlayersReadyChanged;
+            
+            startButton.onClick.AddListener(OnStartClicked);
+        }
     }
 
     // TODO: Check correct execution if can access NetworkManager is not too late
     private void OnDestroy()
     {
+        if (!LobbyManager.Instance) return;
+        
         LobbyManager.Instance.OnPlayerListChanged -= OnPlayerListChanged;
-        
-        if (!isServer) return;
-        
-        LobbyManager.Instance.OnPlayerReady -= OnPlayerReady;
-        
-        startButton.onClick.RemoveListener(OnStartClicked);
+
+        if (isServer)
+        {
+            LobbyManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+
+            startButton.onClick.RemoveListener(OnStartClicked);
+        }
     }
     
     private void OnPlayerListChanged(Dictionary<string, Player> players)
@@ -47,34 +49,44 @@ public class LobbyUI : MonoBehaviour
         RefreshPlayerList(players);
     }
 
-    private void RefreshPlayerList(Dictionary<string, Player> players)
+    private void RefreshPlayerList(Dictionary<string, Player> playersById)
     {
         playerListContainer.DestroyChildren();
         
-        foreach (var player in players)
+        foreach (var playerById in playersById)
         {
-            var goInstance = Instantiate(playerLobbyPrefab, playerListContainer);
-            goInstance.GetComponent<TextMeshProUGUI>().text = player.Key;
-            goInstance.GetComponent<TMP_Dropdown>().value = (int)player.Value.spawn.Value;
-            goInstance.GetComponent<TMP_Dropdown>().enabled = isServer;
+            var playerId = playerById.Key;
+            var player = playerById.Value;
+
+            var go = Instantiate(playerLobbyPrefab, playerListContainer);
+
+            var text = go.GetComponentInChildren<TextMeshProUGUI>();
+            var dropdown = go.GetComponentInChildren<TMP_Dropdown>();
+
+            text.text = playerId;
+            dropdown.value = (int)player.spawn.Value;
+            dropdown.interactable = isServer;
 
             if (isServer)
             {
-                goInstance.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(OnDropdownValueChanged);
+                dropdown.onValueChanged.AddListener(value =>
+                {
+                    LobbyManager.Instance.AssignSpawn(playerId, (SpawnPosition)value);
+                });
+            }
+            else
+            {
+                player.spawn.OnValueChanged += (_, newValue) =>
+                {
+                    dropdown.SetValueWithoutNotify((int)newValue);
+                };
             }
         }
     }
 
-    private void OnDropdownValueChanged(int value)
+    private void OnAllPlayersReadyChanged(bool playersReady)
     {
-        // TODO : AssignSpawn to player
-        
-        RefreshPlayerList();
-    }
-
-    private void OnPlayerReady(bool playerReady)
-    {
-        startButton.enabled = playerReady;
+        startButton.enabled = playersReady;
     }
 
     private void OnStartClicked()
