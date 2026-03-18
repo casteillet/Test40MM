@@ -6,6 +6,7 @@ public static class NetworkHelper
     public static string GetLocalIPv4(NetworkInterfaceType interfaceType)
     {
         var output = "";
+        
         foreach (var item in NetworkInterface.GetAllNetworkInterfaces())
         {
             if (item.NetworkInterfaceType != interfaceType || item.OperationalStatus != OperationalStatus.Up) continue;
@@ -18,6 +19,7 @@ public static class NetworkHelper
                 }
             }
         }
+        
         return output;
     }
 }

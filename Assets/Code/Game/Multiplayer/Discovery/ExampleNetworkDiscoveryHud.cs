@@ -12,7 +12,7 @@ using UnityEditor.Events;
 
 public class ExampleNetworkDiscoveryHud : MonoBehaviour
 {
-    [SerializeField] private ExampleNetworkDiscovery networkDiscovery;
+    [SerializeField] private NetworkDiscoveryManager networkDiscoveryManager;
     
     private NetworkManager networkManager;
     private Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new();
@@ -22,16 +22,16 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
 #if UNITY_EDITOR
     private void OnValidate()
     {
-        if (networkDiscovery) return;
+        if (networkDiscoveryManager) return;
         
-        UnityEventTools.AddPersistentListener(networkDiscovery.OnServerFound, OnServerFound);
-        Undo.RecordObjects(new Object[] { this, networkDiscovery}, "Set NetworkDiscovery");
+        UnityEventTools.AddPersistentListener(networkDiscoveryManager.onServerFound, OnServerFound);
+        Undo.RecordObjects(new Object[] { this, networkDiscoveryManager}, "Set NetworkDiscovery");
     }
 #endif
     
     private void Awake()
     {
-        networkDiscovery = GetComponent<ExampleNetworkDiscovery>();
+        networkDiscoveryManager = GetComponent<NetworkDiscoveryManager>();
     }
 
     private void Start()
@@ -58,7 +58,7 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
             if (GUILayout.Button("Shutdown"))
             {
                 networkManager.Shutdown();
-                networkDiscovery.StopDiscovery();
+                networkDiscoveryManager.StopDiscovery();
             }
         }
         else
@@ -81,18 +81,18 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
             networkManager.StartHost();
         }
         
-        if (networkDiscovery.IsRunning)
+        if (networkDiscoveryManager.IsRunning)
         {
             if (GUILayout.Button("Stop Client Discovery"))
             {
-                networkDiscovery.StopDiscovery();
+                networkDiscoveryManager.StopDiscovery();
                 discoveredServers.Clear();
             }
             
             if (GUILayout.Button("Refresh List"))
             {
                 discoveredServers.Clear();
-                networkDiscovery.ClientBroadcast(new DiscoveryBroadcastData());
+                networkDiscoveryManager.ClientBroadcast(new DiscoveryBroadcastData());
             }
             
             GUILayout.Space(40);
@@ -112,26 +112,26 @@ public class ExampleNetworkDiscoveryHud : MonoBehaviour
         {
             if (GUILayout.Button("Discover Servers"))
             {
-                networkDiscovery.StartClient();
-                networkDiscovery.ClientBroadcast(new DiscoveryBroadcastData());
+                networkDiscoveryManager.StartClient();
+                networkDiscoveryManager.ClientBroadcast(new DiscoveryBroadcastData());
             }
         }
     }
 
     private void ServerControlsGUI()
     {
-        if (networkDiscovery.IsRunning)
+        if (networkDiscoveryManager.IsRunning)
         {
             if (GUILayout.Button("Stop Server Discovery"))
             {
-                networkDiscovery.StopDiscovery();
+                networkDiscoveryManager.StopDiscovery();
             }
         }
         else
         {
             if (GUILayout.Button("Start Server Discovery"))
             {
-                networkDiscovery.StartServer();
+                networkDiscoveryManager.StartServer();
             }
         }
     }

@@ -8,22 +8,18 @@ using UnityEngine.Events;
 using UnityUtils;
 
 [RequireComponent(typeof(NetworkManager))]
-public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
+public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
 {
     [Serializable] public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData> { };
 
+    [SerializeField] private bool startWithServer = true;
+    
     private NetworkManager networkManager;
+    private bool hasStartedWithServer;
     
-    [SerializeField]
-    [Tooltip("If true NetworkDiscovery will make the server visible and answer to client broadcasts as soon as netcode starts running as server.")]
-    bool m_StartWithServer = true;
-
-    public string ServerName = "EnterName";
-
-    public ServerFoundEvent OnServerFound;
+    public string serverName = "Server";
+    public ServerFoundEvent onServerFound;
     
-    private bool m_HasStartedWithServer;
-
     private void Start()
     {
         networkManager = NetworkManager.Singleton;
@@ -44,12 +40,12 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
 
     public void Update()
     {
-        if (m_StartWithServer && !m_HasStartedWithServer && !IsRunning)
+        if (startWithServer && !hasStartedWithServer && !IsRunning)
         {
             if (networkManager.IsServer)
             {
                 StartServer();
-                m_HasStartedWithServer = true;
+                hasStartedWithServer = true;
             }
         }
     }
@@ -58,14 +54,15 @@ public class ExampleNetworkDiscovery : NetworkDiscovery<DiscoveryBroadcastData, 
     {
         response = new DiscoveryResponseData()
         {
-            ServerName = ServerName,
+            ServerName = serverName,
             Port = ((UnityTransport) networkManager.NetworkConfig.NetworkTransport).ConnectionData.Port,
         };
+        
         return true;
     }
 
     protected override void ResponseReceived(IPEndPoint sender, DiscoveryResponseData response)
     {
-        OnServerFound.Invoke(sender, response);
+        onServerFound.Invoke(sender, response);
     }
 }
