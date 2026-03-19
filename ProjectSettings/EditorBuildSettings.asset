@@ -6,10 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Level/Scenes/Test/Multiplayer.unity
+    path: Assets/Level/Scenes/Test/Lobby.unity
     guid: e0ea47592b6a1e9409410313ebcb1f2f
+  - enabled: 1
+    path: Assets/Level/Scenes/Game/Game.unity
+    guid: 57aa91943992dde428c62d3e1fd26f2e
   - enabled: 0
-    path: Assets/Level/Scenes/Test/ScenarioEditor.unity
+    path: Assets/_TEST/ScenarioEditor.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
