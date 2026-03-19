@@ -1,42 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using KBCore.Refs;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-#if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.Events;
-#endif
-
-public class ExampleNetworkDiscoveryHud : MonoBehaviour
+public class NetworkDiscoveryHud : ValidatedMonoBehaviour
 {
-    [SerializeField] private NetworkDiscoveryManager networkDiscoveryManager;
+    [Self, SerializeField] private NetworkDiscoveryManager networkDiscoveryManager;
     
     private NetworkManager networkManager;
     private Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new();
 
-    public Vector2 DrawOffset = new Vector2(10, 210);
-    
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (networkDiscoveryManager) return;
-        
-        UnityEventTools.AddPersistentListener(networkDiscoveryManager.onServerFound, OnServerFound);
-        Undo.RecordObjects(new Object[] { this, networkDiscoveryManager}, "Set NetworkDiscovery");
-    }
-#endif
-    
-    private void Awake()
-    {
-        networkDiscoveryManager = GetComponent<NetworkDiscoveryManager>();
-    }
+    public Vector2 DrawOffset = new(10, 210);
 
     private void Start()
     {
         networkManager = NetworkManager.Singleton;
+        
+        networkDiscoveryManager.onServerFound.AddListener(OnServerFound);
     }
 
     private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)

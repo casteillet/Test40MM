@@ -8,9 +8,16 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
 {
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
-
-    public event Action<Dictionary<string, Player>> OnPlayerListChanged;
+    
+    public NetworkList<PlayerLobbyState> networkPlayers;
     public event Action<bool> OnAllPlayersReadyChanged;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        
+        networkPlayers = new NetworkList<PlayerLobbyState>();
+    }
     
     public void RegisterPlayer(Player player)
     {
@@ -22,7 +29,6 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         if (playerDataById.TryGetValue(id, out var data)) // Rejoin existing session
         {
             data.ClientId = clientId;
-
             player.spawn.Value = data.Spawn;
         }
         else // New player
@@ -36,10 +42,16 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
 
             playerDataById.Add(id, newData);
         }
+        
+        networkPlayers.Add(new PlayerLobbyState
+        {
+            PlayerId = id,
+            ClientId = clientId,
+            Spawn = SpawnPosition.None
+        });
 
         Debug.Log($"Player {id} connected");
 
-        OnPlayerListChanged?.Invoke(GetPlayers());
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
     
@@ -52,18 +64,26 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
             playersByClientId.Remove(data.ClientId);
             data.ClientId = 0;
         }
+        
+        for (var i = 0; i < networkPlayers.Count; i++)
+        {
+            if (networkPlayers[i].PlayerId.ToString() == id)
+            {
+                networkPlayers.RemoveAt(i);
+                break;
+            }
+        }
 
         Debug.Log($"Player {id} disconnected");
 
-        OnPlayerListChanged?.Invoke(GetPlayers());
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
     
-    public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
+    public bool TryAssignSpawn(string playerId, SpawnPosition spawnPosition)
     {
-        if (!IsServer) return;
+        if (!IsServer) return false;
 
-        if (spawnPosition != SpawnPosition.None && IsSpawnTaken(spawnPosition)) return;
+        if (spawnPosition != SpawnPosition.None && IsSpawnTaken(spawnPosition)) return false;
 
         if (playerDataById.TryGetValue(playerId, out var data))
         {
@@ -74,9 +94,21 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
                 player.spawn.Value = spawnPosition;
             }
         }
+        
+        for (var i = 0; i < networkPlayers.Count; i++)
+        {
+            if (networkPlayers[i].PlayerId.Equals(playerId))
+            {
+                var player = networkPlayers[i];
+                player.Spawn = spawnPosition;
+                networkPlayers[i] = player;
+                break;
+            }
+        }
 
-        // OnPlayerListChanged?.Invoke(GetPlayers());
+        networkPlayers.IsDirty();
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
+        return true;
     }
 
     private bool IsSpawnTaken(SpawnPosition spawnPosition)
@@ -106,20 +138,5 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         if (!AllPlayersReady()) return;
 
         NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
-    }
-    
-    public Dictionary<string, Player> GetPlayers()
-    {
-        var result = new Dictionary<string, Player>();
-
-        foreach (var data in playerDataById.Values)
-        {
-            if (playersByClientId.TryGetValue(data.ClientId, out var player))
-            {
-                result[data.PlayerId] = player;
-            }
-        }
-
-        return result;
     }
 }

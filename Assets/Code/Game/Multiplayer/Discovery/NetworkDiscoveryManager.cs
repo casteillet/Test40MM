@@ -6,6 +6,7 @@ using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityUtils;
+using VInspector;
 
 [RequireComponent(typeof(NetworkManager))]
 public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
@@ -13,6 +14,14 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
     [Serializable] public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData> { };
 
     [SerializeField] private bool startWithServer = true;
+    
+#if UNITY_EDITOR
+    private enum ConnectionTestType { Wireless, Local }
+    
+    [Header("Debug")]
+    [SerializeField] private bool localTestMode;
+    [ShowIf("localTestMode"), SerializeField] private ConnectionTestType connectionTestType;[EndIf]
+#endif
     
     private NetworkManager networkManager;
     private bool hasStartedWithServer;
@@ -29,9 +38,16 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
         var ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Ethernet);
         
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (ipAddress.IsNullOrEmpty())
+        if (localTestMode)
         {
-            ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+            if (connectionTestType == ConnectionTestType.Wireless)
+            {
+                ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
+            }
+            else if (connectionTestType == ConnectionTestType.Local)
+            {
+                return;
+            }
         }
 #endif
         

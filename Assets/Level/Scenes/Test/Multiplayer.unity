@@ -538,6 +538,8 @@ MonoBehaviour:
   m_Port: 47777
   m_UniqueApplicationId: -6998052973608862658
   startWithServer: 1
+  localTestMode: 0
+  connectionTestType: 1
   serverName: Server
   onServerFound:
     m_PersistentCalls:

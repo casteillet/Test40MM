@@ -9,6 +9,8 @@ public class PlayerSpawner : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
+        
+        Debug.Log("Spawning player"); // TODO: Should execute only on the connected client if join mid game
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : NetworkBehaviour
 {
-    [HideInInspector] public NetworkVariable<FixedString128Bytes> playerId = new();
+    [HideInInspector] public NetworkVariable<FixedString64Bytes> playerId = new();
     public NetworkVariable<SpawnPosition> spawn = new();
 
     public override void OnNetworkSpawn()
@@ -24,10 +24,11 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [Rpc(SendTo.Server)]
     private void SetPlayerIdServerRpc(string id)
     {
-        playerId.Value = id;
+        // playerId.Value = id;
+        playerId.Value = System.Guid.NewGuid().ToString();
         
         LobbyManager.Instance.RegisterPlayer(this);
     }
