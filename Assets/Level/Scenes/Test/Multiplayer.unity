@@ -535,7 +535,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56fe16f5c02164b4b81588cc49081a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExampleNetworkDiscovery
-  m_Port: 47777
+  m_Port: 47768
   m_UniqueApplicationId: -6998052973608862658
   startWithServer: 1
   localTestMode: 0
@@ -970,6 +970,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyManager
   ShowTopMostFoldoutHeaderGroup: 1
+  networkPlayers:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
 --- !u!1 &1693684117
 GameObject:
   m_ObjectHideFlags: 0

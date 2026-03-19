@@ -10,7 +10,9 @@ public struct PlayerLobbyState : INetworkSerializable, IEquatable<PlayerLobbySta
 
     public bool Equals(PlayerLobbyState other)
     {
-        return PlayerId.Equals(other.PlayerId);
+        return PlayerId.Equals(other.PlayerId)
+               && ClientId == other.ClientId
+               && Spawn == other.Spawn;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter

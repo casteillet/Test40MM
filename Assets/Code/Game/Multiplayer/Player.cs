@@ -24,7 +24,7 @@ public class Player : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Server)]
+    [Rpc(SendTo.Server, DeferLocal = true)]
     private void SetPlayerIdServerRpc(string id)
     {
         // playerId.Value = id;

@@ -9,7 +9,11 @@ public class LobbyPlayerUI : MonoBehaviour
 
     private string playerId;
     private bool isServer;
-    private int oldSpawnPosition;
+
+    private void Awake()
+    {
+        dropdown.interactable = false;
+    }
 
     public void Initialize(PlayerLobbyState state, bool isServer)
     {
@@ -31,21 +35,12 @@ public class LobbyPlayerUI : MonoBehaviour
         if (isServer)
         {
             dropdown.onValueChanged.AddListener(OnDropdownChanged);
-            oldSpawnPosition = (int)state.Spawn;
         }
     }
 
     private void OnDropdownChanged(int value)
     {
-        if (LobbyManager.Instance.TryAssignSpawn(playerId, (SpawnPosition)value))
-        {
-            oldSpawnPosition = dropdown.value;
-            dropdown.value = value;
-        }
-        else
-        {
-            dropdown.value = oldSpawnPosition;
-        }
+        LobbyManager.Instance.AssignSpawn(playerId, (SpawnPosition)value);
     }
 
     private void OnDestroy()

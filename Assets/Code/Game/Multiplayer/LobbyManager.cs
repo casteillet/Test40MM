@@ -18,7 +18,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         
         networkPlayers = new NetworkList<PlayerLobbyState>();
     }
-    
+
     public void RegisterPlayer(Player player)
     {
         var id = player.playerId.Value.ToString();
@@ -35,9 +35,9 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         {
             var newData = new PlayerData
             {
+                ClientId = clientId,
                 PlayerId = id,
-                Spawn = SpawnPosition.None,
-                ClientId = clientId
+                Spawn = SpawnPosition.None
             };
 
             playerDataById.Add(id, newData);
@@ -79,11 +79,9 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
     
-    public bool TryAssignSpawn(string playerId, SpawnPosition spawnPosition)
+    public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
     {
-        if (!IsServer) return false;
-
-        if (spawnPosition != SpawnPosition.None && IsSpawnTaken(spawnPosition)) return false;
+        if (!IsServer) return;
 
         if (playerDataById.TryGetValue(playerId, out var data))
         {
@@ -106,19 +104,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
             }
         }
 
-        networkPlayers.IsDirty();
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
-        return true;
-    }
-
-    private bool IsSpawnTaken(SpawnPosition spawnPosition)
-    {
-        foreach (var player in playersByClientId.Values)
-        {
-            if (player.spawn.Value == spawnPosition) return true;
-        }
-        
-        return false;
     }
 
     private bool AllPlayersReady()
@@ -126,6 +112,13 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         foreach (var player in playersByClientId.Values)
         {
             if (player.spawn.Value == SpawnPosition.None) return false;
+
+            foreach (var otherPlayer in playersByClientId.Values)
+            {
+                if (otherPlayer == player) continue;
+                
+                if (player.spawn.Value == otherPlayer.spawn.Value) return false;
+            }
         }
         
         return true;
@@ -137,6 +130,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
         
         if (!AllPlayersReady()) return;
 
+        // TODO: Call a SceneManager instead
         NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 }

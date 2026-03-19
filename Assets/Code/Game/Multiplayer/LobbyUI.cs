@@ -22,23 +22,26 @@ public class LobbyUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (NetworkManager.Singleton.IsServer)
+        if (NetworkManager.Singleton)
         {
-            startButton.onClick.RemoveListener(OnStartClicked);
-
-            if (LobbyManager.Instance)
+            if (NetworkManager.Singleton.IsServer)
             {
-                LobbyManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+                startButton.onClick.RemoveListener(OnStartClicked);
+
+                if (LobbyManager.Instance)
+                {
+                    LobbyManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+                }
             }
+
+            NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
+            NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
+
+            NetworkManager.Singleton.OnClientStarted -= OnClientStarted;
+            NetworkManager.Singleton.OnClientStopped -= OnClientStopped;
         }
-            
-        NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
-        NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
-        
-        NetworkManager.Singleton.OnClientStarted -= OnClientStarted;
-        NetworkManager.Singleton.OnClientStopped -= OnClientStopped;
-        
-        if (LobbyManager.Instance)
+
+        if (LobbyManager.Instance && LobbyManager.Instance.networkPlayers != null)
         {
             LobbyManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
         }
@@ -68,8 +71,6 @@ public class LobbyUI : MonoBehaviour
         startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
         
         LobbyManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
-        
-        RefreshPlayerList();
     }
 
     private void OnClientStopped(bool safe)
@@ -83,11 +84,11 @@ public class LobbyUI : MonoBehaviour
     {
         RefreshPlayerList();
     }
-    
+
     private void RefreshPlayerList()
     {
         playerListContainer.DestroyChildren();
-
+        
         foreach (var playerState in LobbyManager.Instance.networkPlayers)
         {
             var go = Instantiate(playerLobbyPrefab, playerListContainer);

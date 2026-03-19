@@ -51,6 +51,8 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
         }
 #endif
         
+        if (ipAddress.IsNullOrEmpty()) return;
+        
         unityTransport.SetConnectionData(ipAddress, Port);
     }
 
