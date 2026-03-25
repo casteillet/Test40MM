@@ -18,7 +18,7 @@ public class NetworkDiscoveryHud : ValidatedMonoBehaviour
     {
         networkManager = NetworkManager.Singleton;
         
-        networkDiscoveryManager.onServerFound.AddListener(OnServerFound);
+        //networkDiscoveryManager.onServerFound.AddListener(OnServerFound);
     }
 
     private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityUtils;
 
-public class LobbyManager : NetworkSingleton<LobbyManager>
+public class LobbyManager : Singleton<LobbyManager>
 {
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
@@ -81,7 +82,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
     
     public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
     {
-        if (!IsServer) return;
+        if (!NetworkManager.Singleton.IsServer) return;
 
         if (playerDataById.TryGetValue(playerId, out var data))
         {
@@ -126,7 +127,7 @@ public class LobbyManager : NetworkSingleton<LobbyManager>
 
     public void StartGame()
     {
-        if (!IsServer) return;
+        if (!NetworkManager.Singleton.IsServer) return;
         
         if (!AllPlayersReady()) return;
 

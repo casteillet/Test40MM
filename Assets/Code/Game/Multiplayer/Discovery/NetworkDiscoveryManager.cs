@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using Unity.Netcode;
@@ -8,12 +10,9 @@ using UnityEngine.Events;
 using UnityUtils;
 using VInspector;
 
-[RequireComponent(typeof(NetworkManager))]
 public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
 {
     [Serializable] public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData> { };
-
-    [SerializeField] private bool startWithServer = true;
     
 #if UNITY_EDITOR
     private enum ConnectionTestType { Wireless, Local }
@@ -23,17 +22,14 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
     [ShowIf("localTestMode"), SerializeField] private ConnectionTestType connectionTestType;[EndIf]
 #endif
     
-    private NetworkManager networkManager;
-    private bool hasStartedWithServer;
+    private Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new();
     
     public string serverName = "Server";
-    public ServerFoundEvent onServerFound;
+    
     
     private void Start()
     {
-        networkManager = NetworkManager.Singleton;
-        
-        var unityTransport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
+        var unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
 
         var ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Ethernet);
         
@@ -56,24 +52,12 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
         unityTransport.SetConnectionData(ipAddress, Port);
     }
 
-    public void Update()
-    {
-        if (startWithServer && !hasStartedWithServer && !IsRunning)
-        {
-            if (networkManager.IsServer)
-            {
-                StartServer();
-                hasStartedWithServer = true;
-            }
-        }
-    }
-
     protected override bool ProcessBroadcast(IPEndPoint sender, DiscoveryBroadcastData broadCast, out DiscoveryResponseData response)
     {
         response = new DiscoveryResponseData()
         {
             ServerName = serverName,
-            Port = ((UnityTransport) networkManager.NetworkConfig.NetworkTransport).ConnectionData.Port,
+            Port = ((UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport).ConnectionData.Port,
         };
         
         return true;
@@ -81,6 +65,43 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
 
     protected override void ResponseReceived(IPEndPoint sender, DiscoveryResponseData response)
     {
-        onServerFound.Invoke(sender, response);
+        OnServerFound(sender, response);
+    }
+    
+    private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)
+    {
+        discoveredServers[sender.Address] = response;
+        Debug.Log($"Server {sender.Address}:{sender.Port} has been found");
+        TryConnectToDiscoveredServer();
+    }
+
+    public void TryConnectToDiscoveredServer()
+    {
+        var discoveredServer = discoveredServers.First();
+        
+        var transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (localTestMode)
+        {
+            if (connectionTestType == ConnectionTestType.Local)
+            {
+                var address = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+                transport.SetConnectionData(address.ConnectionData.Address, discoveredServer.Value.Port);
+            }
+        }
+#else
+        transport.SetConnectionData(discoveredServer.Key.ToString(), discoveredServer.Value.Port);
+#endif   
+        Debug.Log($"a Address: {transport.ConnectionData.Address}, Port: {transport.ConnectionData.Port}");
+        Debug.Log($"b Address: {discoveredServer.Key}, Port: {discoveredServer.Value.Port}");
+
+        NetworkManager.Singleton.StartClient();
+        Debug.Log("NEED TO STOP DISCOVERY BUT CRASH");
+        //StopDiscovery();
+//         if (NetworkManager.Singleton.StartClient())
+//         {
+//             StopDiscovery(); 
+//         }
     }
 }
