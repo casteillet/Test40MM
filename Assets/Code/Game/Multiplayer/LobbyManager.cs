@@ -17,6 +17,6 @@ public class LobbyManager : Singleton<LobbyManager>
 
         if (!SessionManager.Instance.AllPlayersReady()) return;
 
-        NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        NetworkSceneManager.Instance.LoadGameAsServer();
     }
 }

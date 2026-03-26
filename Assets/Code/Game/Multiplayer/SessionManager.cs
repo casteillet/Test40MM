@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SessionManager : NetworkPersistentSingleton<SessionManager>
+public class SessionManager : NetworkSingleton<SessionManager>
 {
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
@@ -17,9 +17,8 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
         if (!IsServer) return;
         
         networkPlayers = new NetworkList<PlayerLobbyState>();
-        Debug.Log($"OnNetworkSpawn: {networkPlayers}");
     }
-
+    
     public void RegisterPlayer(Player player)
     {
         if (!IsServer || !IsSpawned) return;
@@ -52,7 +51,6 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
             ClientId = clientId,
             Spawn = player.spawn.Value,
         });
-        Debug.Log($"OnNetworkSpawn: {networkPlayers}");
         
         Debug.Log($"Player {id} connected");
 
