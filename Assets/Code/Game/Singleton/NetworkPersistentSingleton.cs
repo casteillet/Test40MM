@@ -1,7 +1,9 @@
-﻿using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
 
-public class NetworkSingleton<T> : NetworkBehaviour where T : Component {
+public class NetworkPersistentSingleton<T> : NetworkBehaviour where T : Component {
+    public bool AutoUnparentOnAwake = true;
+
     protected static T instance;
 
     public static bool HasInstance => instance != null;
@@ -11,10 +13,6 @@ public class NetworkSingleton<T> : NetworkBehaviour where T : Component {
         get {
             if (instance == null) {
                 instance = FindAnyObjectByType<T>();
-                if (instance == null) {
-                    var go = new GameObject(typeof(T).Name + " Auto-Generated");
-                    instance = go.AddComponent<T>();
-                }
             }
 
             return instance;
@@ -31,7 +29,17 @@ public class NetworkSingleton<T> : NetworkBehaviour where T : Component {
     protected virtual void InitializeSingleton() {
         if (!Application.isPlaying) return;
 
-        instance = this as T;
+        if (AutoUnparentOnAwake) {
+            transform.SetParent(null);
+        }
+
+        if (instance == null) {
+            instance = this as T;
+            DontDestroyOnLoad(gameObject);
+        } else {
+            if (instance != this) {
+                Destroy(gameObject);
+            }
+        }
     }
 }
-

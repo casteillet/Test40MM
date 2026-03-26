@@ -20,17 +20,15 @@ public class Player : NetworkBehaviour
     {
         if (IsServer)
         {
-            LobbyManager.Instance.UnregisterPlayer(this);
+            SessionManager.Instance.UnregisterPlayer(this);
         }
     }
 
-    [Rpc(SendTo.Server, DeferLocal = true)]
+    [Rpc(SendTo.Server)]
     private void SetPlayerIdServerRpc(string id)
     {
-        // playerId.Value = id;
-        playerId.Value = System.Guid.NewGuid().ToString();
-        
-        LobbyManager.Instance.RegisterPlayer(this);
+        playerId.Value = id;
+        SessionManager.Instance.RegisterPlayer(this);
     }
 
     private string GetOrCreatePlayerId()

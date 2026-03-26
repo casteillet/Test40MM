@@ -28,9 +28,9 @@ public class LobbyUI : MonoBehaviour
             {
                 startButton.onClick.RemoveListener(OnStartClicked);
 
-                if (LobbyManager.Instance)
+                if (SessionManager.Instance)
                 {
-                    LobbyManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+                    SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
                 }
             }
 
@@ -41,9 +41,9 @@ public class LobbyUI : MonoBehaviour
             NetworkManager.Singleton.OnClientStopped -= OnClientStopped;
         }
 
-        if (LobbyManager.Instance && LobbyManager.Instance.networkPlayers != null)
+        if (SessionManager.Instance && SessionManager.Instance.networkPlayers != null)
         {
-            LobbyManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+            SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
         }
     }
 
@@ -52,32 +52,32 @@ public class LobbyUI : MonoBehaviour
         startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
         startButton.onClick.AddListener(OnStartClicked);
         
-        LobbyManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
-        LobbyManager.Instance.OnAllPlayersReadyChanged += OnAllPlayersReadyChanged;
+        SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
+        SessionManager.Instance.OnAllPlayersReadyChanged += OnAllPlayersReadyChanged;
     }
     
     private void OnServerStopped(bool safe)
     {
         startButton.onClick.RemoveListener(OnStartClicked);
         
-        if (!LobbyManager.Instance) return;
+        if (!SessionManager.Instance) return;
         
-        LobbyManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
-        LobbyManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+        SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+        SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
     }
 
     private void OnClientStarted()
     {
         startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
         
-        LobbyManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
+        SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
     }
 
     private void OnClientStopped(bool safe)
     { 
-        if (!LobbyManager.Instance) return;
+        if (!SessionManager.Instance) return;
         
-        LobbyManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+        SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
     }
     
     private void OnPlayerListChanged(NetworkListEvent<PlayerLobbyState> _)
@@ -89,7 +89,7 @@ public class LobbyUI : MonoBehaviour
     {
         playerListContainer.DestroyChildren();
         
-        foreach (var playerState in LobbyManager.Instance.networkPlayers)
+        foreach (var playerState in SessionManager.Instance.networkPlayers)
         {
             var go = Instantiate(playerLobbyPrefab, playerListContainer);
 

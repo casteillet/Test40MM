@@ -31,8 +31,8 @@ public class NetworkSceneManager : PersistentSingleton<NetworkSceneManager>
     }
 
     private void LoadMainMenu() => LoadScene("MainMenu");
-    
     public void LoadLobbyAsServer() => LoadNetworkScene("Lobby");
+    public void LoadGameAsServer() => LoadNetworkScene("Game");
 
     private void LoadNetworkScene(string sceneName)
     {

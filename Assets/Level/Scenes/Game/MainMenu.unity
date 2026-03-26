@@ -310,6 +310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 125872158}
+  - component: {fileID: 125872160}
   - component: {fileID: 125872159}
   m_Layer: 0
   m_Name: NetworkSessionManager
@@ -331,7 +332,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 193933795}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &125872159
 MonoBehaviour:
@@ -345,7 +346,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d2ca59f903a472ebd73e56b1270db2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkSessionManager
-  networkDiscoveryManager: {fileID: 1881214401}
+  ShowTopMostFoldoutHeaderGroup: 1
+  AutoUnparentOnAwake: 1
+  networkPlayers:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+--- !u!114 &125872160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125872157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3724357754
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 0
+  ActiveSceneSynchronization: 1
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 0
+  SyncOwnerTransformWhenParented: 0
+  AllowOwnerToParent: 0
 --- !u!1 &193933794
 GameObject:
   m_ObjectHideFlags: 0
@@ -375,7 +406,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 125872158}
   - {fileID: 1881214402}
   - {fileID: 542864946}
   m_Father: {fileID: 0}
@@ -463,9 +493,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 125872159}
-        m_TargetAssemblyTypeName: NetworkSessionManager, Assembly-CSharp
-        m_MethodName: StartServer
+      - m_Target: {fileID: 1881214401}
+        m_TargetAssemblyTypeName: NetworkDiscoveryManager, Assembly-CSharp
+        m_MethodName: StartServerNetwork
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1370,7 +1400,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1881214399}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d8cd8b8e70ef7443962556c1347ddd5, type: 3}
   m_Name: 
@@ -1389,7 +1419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56fe16f5c02164b4b81588cc49081a70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExampleNetworkDiscovery
-  m_Port: 47768
+  m_Port: 65528
   m_UniqueApplicationId: -6998052973608862658
   localTestMode: 1
   connectionTestType: 1
@@ -1492,9 +1522,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 125872159}
-        m_TargetAssemblyTypeName: NetworkSessionManager, Assembly-CSharp
-        m_MethodName: StartClient
+      - m_Target: {fileID: 1881214401}
+        m_TargetAssemblyTypeName: NetworkDiscoveryManager, Assembly-CSharp
+        m_MethodName: StartClientNetwork
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1580,6 +1610,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 53554284}
+  - {fileID: 125872158}
   - {fileID: 193933795}
   - {fileID: 2116735237}
   - {fileID: 1016779724}

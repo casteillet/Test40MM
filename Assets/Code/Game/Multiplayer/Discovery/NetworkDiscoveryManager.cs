@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -42,6 +43,7 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
             }
             else if (connectionTestType == ConnectionTestType.Local)
             {
+                unityTransport.SetConnectionData(unityTransport.ConnectionData.Address, Port);
                 return;
             }
         }
@@ -71,7 +73,6 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
     private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)
     {
         discoveredServers[sender.Address] = response;
-        Debug.Log($"Server {sender.Address}:{sender.Port} has been found");
         TryConnectToDiscoveredServer();
     }
 
@@ -96,12 +97,29 @@ public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, 
         Debug.Log($"a Address: {transport.ConnectionData.Address}, Port: {transport.ConnectionData.Port}");
         Debug.Log($"b Address: {discoveredServer.Key}, Port: {discoveredServer.Value.Port}");
 
-        NetworkManager.Singleton.StartClient();
-        Debug.Log("NEED TO STOP DISCOVERY BUT CRASH");
-        //StopDiscovery();
-//         if (NetworkManager.Singleton.StartClient())
-//         {
-//             StopDiscovery(); 
-//         }
+         if (NetworkManager.Singleton.StartClient())
+         {
+             StartCoroutine(StopDiscoveryCoroutine());
+         }
+    }
+
+    private IEnumerator StopDiscoveryCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+        StopDiscovery();
+    }
+    
+    public void StartServerNetwork()
+    {
+        if (!NetworkManager.Singleton.StartServer()) return;
+        
+        StartServer();
+        NetworkSceneManager.Instance.LoadLobbyAsServer();
+    }
+    
+    public void StartClientNetwork()
+    {
+        StartClient();
+        ClientBroadcast(new DiscoveryBroadcastData());
     }
 }
