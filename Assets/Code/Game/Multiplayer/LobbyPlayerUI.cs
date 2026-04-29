@@ -12,7 +12,7 @@ public class LobbyPlayerUI : MonoBehaviour
 
     private void Awake()
     {
-        dropdown.interactable = false;
+        gameObject.SetActive(false);
     }
 
     public void Initialize(PlayerLobbyState state, bool isServer)
@@ -36,6 +36,8 @@ public class LobbyPlayerUI : MonoBehaviour
         {
             dropdown.onValueChanged.AddListener(OnDropdownChanged);
         }
+        
+        gameObject.SetActive(true);
     }
 
     private void OnDropdownChanged(int value)

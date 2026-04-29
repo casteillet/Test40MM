@@ -8,14 +8,26 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private Transform playerListContainer;
     [SerializeField] private GameObject playerLobbyPrefab;
-    
+
+    private bool serverInitialized;
+    private bool clientInitialized;
+
     private void Start()
     {
         startButton.interactable = false;
-        
+
+        if (NetworkManager.Singleton.IsServer)
+        {
+            OnServerStarted();
+        }
+        else if (NetworkManager.Singleton.IsClient)
+        {
+            OnClientStarted();
+        }
+
         NetworkManager.Singleton.OnServerStarted += OnServerStarted;
         NetworkManager.Singleton.OnServerStopped += OnServerStopped;
-        
+
         NetworkManager.Singleton.OnClientStarted += OnClientStarted;
         NetworkManager.Singleton.OnClientStopped += OnClientStopped;
     }
@@ -24,16 +36,6 @@ public class LobbyUI : MonoBehaviour
     {
         if (NetworkManager.Singleton)
         {
-            if (NetworkManager.Singleton.IsServer)
-            {
-                startButton.onClick.RemoveListener(OnStartClicked);
-
-                if (SessionManager.Instance)
-                {
-                    SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
-                }
-            }
-
             NetworkManager.Singleton.OnServerStarted -= OnServerStarted;
             NetworkManager.Singleton.OnServerStopped -= OnServerStopped;
 
@@ -41,45 +43,87 @@ public class LobbyUI : MonoBehaviour
             NetworkManager.Singleton.OnClientStopped -= OnClientStopped;
         }
 
-        if (SessionManager.Instance && SessionManager.Instance.networkPlayers != null)
+        CleanupServer();
+        CleanupClient();
+    }
+
+    private void OnServerStarted()
+    {
+        if (serverInitialized) return;
+        
+        serverInitialized = true;
+
+        startButton.gameObject.SetActive(true);
+        
+        startButton.onClick.RemoveListener(OnStartClicked);
+        startButton.onClick.AddListener(OnStartClicked);
+
+        if (SessionManager.Instance)
+        {
+            SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+            SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
+
+            SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+            SessionManager.Instance.OnAllPlayersReadyChanged += OnAllPlayersReadyChanged;
+
+            RefreshPlayerList();
+        }
+    }
+
+    private void OnServerStopped(bool _)
+    {
+        CleanupServer();
+    }
+
+    private void OnClientStarted()
+    {
+        if (clientInitialized) return;
+        
+        clientInitialized = true;
+
+        startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
+
+        if (SessionManager.Instance)
+        {
+            SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+            SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
+
+            RefreshPlayerList();
+        }
+    }
+
+    private void OnClientStopped(bool _)
+    {
+        CleanupClient();
+    }
+
+    private void CleanupServer()
+    {
+        if (!serverInitialized) return;
+        
+        serverInitialized = false;
+
+        startButton.onClick.RemoveListener(OnStartClicked);
+
+        if (SessionManager.Instance)
+        {
+            SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
+            SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
+        }
+    }
+
+    private void CleanupClient()
+    {
+        if (!clientInitialized) return;
+        
+        clientInitialized = false;
+
+        if (SessionManager.Instance)
         {
             SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
         }
     }
 
-    private void OnServerStarted()
-    {
-        startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
-        startButton.onClick.AddListener(OnStartClicked);
-        
-        SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
-        SessionManager.Instance.OnAllPlayersReadyChanged += OnAllPlayersReadyChanged;
-    }
-    
-    private void OnServerStopped(bool safe)
-    {
-        startButton.onClick.RemoveListener(OnStartClicked);
-        
-        if (!SessionManager.Instance) return;
-        
-        SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
-        SessionManager.Instance.OnAllPlayersReadyChanged -= OnAllPlayersReadyChanged;
-    }
-
-    private void OnClientStarted()
-    {
-        startButton.gameObject.SetActive(NetworkManager.Singleton.IsServer);
-        
-        SessionManager.Instance.networkPlayers.OnListChanged += OnPlayerListChanged;
-    }
-
-    private void OnClientStopped(bool safe)
-    { 
-        if (!SessionManager.Instance) return;
-        
-        SessionManager.Instance.networkPlayers.OnListChanged -= OnPlayerListChanged;
-    }
-    
     private void OnPlayerListChanged(NetworkListEvent<PlayerLobbyState> _)
     {
         RefreshPlayerList();
@@ -87,8 +131,10 @@ public class LobbyUI : MonoBehaviour
 
     private void RefreshPlayerList()
     {
+        if (!SessionManager.Instance) return;
+
         playerListContainer.DestroyChildren();
-        
+
         foreach (var playerState in SessionManager.Instance.networkPlayers)
         {
             var go = Instantiate(playerLobbyPrefab, playerListContainer);

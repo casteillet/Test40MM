@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SessionManager : NetworkSingleton<SessionManager>
+public class SessionManager : NetworkPersistentSingleton<SessionManager>
 {
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
 
-    public NetworkList<PlayerLobbyState> networkPlayers;
+    public NetworkList<PlayerLobbyState> networkPlayers = new();
     
     public event Action<bool> OnAllPlayersReadyChanged;
-
-    public override void OnNetworkSpawn()
-    {
-        if (!IsServer) return;
-        
-        networkPlayers = new NetworkList<PlayerLobbyState>();
-    }
     
     public void RegisterPlayer(Player player)
     {
@@ -97,13 +90,13 @@ public class SessionManager : NetworkSingleton<SessionManager>
             }
         }
 
-        for (int i = 0; i < networkPlayers.Count; i++)
+        for (var i = 0; i < networkPlayers.Count; i++)
         {
-            if (networkPlayers[i].PlayerId == playerId)
+            if (networkPlayers[i].PlayerId.Value == playerId)
             {
-                var p = networkPlayers[i];
-                p.Spawn = spawnPosition;
-                networkPlayers[i] = p;
+                var player = networkPlayers[i];
+                player.Spawn = spawnPosition;
+                networkPlayers[i] = player;
                 break;
             }
         }
