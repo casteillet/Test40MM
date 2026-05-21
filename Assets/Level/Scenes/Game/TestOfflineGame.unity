@@ -246,51 +246,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &710786086
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 710786088}
-  - component: {fileID: 710786087}
-  m_Layer: 0
-  m_Name: NetworkSessionHandler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &710786087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710786086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd1848f58ca59bb4cb13e6359a744e92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkSessionHandler
-  AutoUnparentOnAwake: 1
---- !u!4 &710786088
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 710786086}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &882068362
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,8 +514,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1fe22d71fe4732ab35bb7d4b3c06f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageablePart
-  entityHealth: {fileID: 1780646839}
   health: {fileID: 1631662602}
+  entityDamageable: {fileID: 1780646838}
 --- !u!1 &1690356003
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,8 +658,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1fe22d71fe4732ab35bb7d4b3c06f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageablePart
-  entityHealth: {fileID: 1780646839}
   health: {fileID: 1690356008}
+  entityDamageable: {fileID: 1780646838}
 --- !u!1 &1780646833
 GameObject:
   m_ObjectHideFlags: 0
@@ -834,11 +789,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0294d4e4a0b14e75b130800493f9800f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityDamageable
+  health: {fileID: 1780646839}
   damageableParts:
   - {fileID: 1690356008}
   - {fileID: 2041500033}
   - {fileID: 1631662602}
-  health: {fileID: 1780646839}
 --- !u!114 &1780646839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -853,6 +808,52 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   currentHealth: 0
   MaxHealth: 100
+--- !u!1 &2019439794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2019439796}
+  - component: {fileID: 2019439795}
+  m_Layer: 0
+  m_Name: DamageTest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2019439795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019439794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e704b8a7858e364e9f2d7ac0ced5ab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageTest
+  mainCamera: {fileID: 882068364}
+  ammoDefinition: {fileID: 11400000, guid: 83cef6ed848243940982371fa55574d2, type: 2}
+--- !u!4 &2019439796
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019439794}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2041500028
 GameObject:
   m_ObjectHideFlags: 0
@@ -995,13 +996,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1fe22d71fe4732ab35bb7d4b3c06f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageablePart
-  entityHealth: {fileID: 1780646839}
   health: {fileID: 2041500033}
+  entityDamageable: {fileID: 1780646838}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 882068365}
   - {fileID: 7492482}
-  - {fileID: 710786088}
   - {fileID: 1780646837}
+  - {fileID: 2019439796}
