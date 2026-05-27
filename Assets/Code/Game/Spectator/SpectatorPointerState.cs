@@ -3,12 +3,12 @@ using UnityEngine;
 
 public struct SpectatorPointerState : INetworkSerializable
 {
-    public Vector2 ScreenPosition;
-    public bool IsClicking;
+    public Vector3 screenPosition;
+    public bool isClicking;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
-        serializer.SerializeValue(ref ScreenPosition);
-        serializer.SerializeValue(ref IsClicking);
+        serializer.SerializeValue(ref screenPosition);
+        serializer.SerializeValue(ref isClicking);
     }
 }

@@ -1,27 +1,20 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class ClientPointerSender : NetworkBehaviour
+public class ClientPointerSender : MonoBehaviour
 {
     private void Update()
     {
-        //if (!IsOwner || IsServer) return;
-        if (!IsOwner) return;
+        if (NetworkManager.Singleton.IsServer) return;
 
         var state = new SpectatorPointerState
         {
-            ScreenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y),
-            IsClicking = Input.GetMouseButton(0)
+            screenPosition = Input.mousePosition,
+            isClicking = Input.GetMouseButton(0)
         };
 
-        SendPointerServerRpc(state);
-        Debug.Log($"ClientPointerSender: {state}");
-    }
-
-    [ServerRpc]
-    private void SendPointerServerRpc(SpectatorPointerState state)
-    {
-        SpectatorManager.Instance.UpdatePointer(OwnerClientId, state);
-        Debug.Log($"SendPointerServerRpc: {state}");
+        SpectatorManager.Instance.UpdatePointerServerRpc(NetworkManager.Singleton.LocalClientId, state);
+        
+        // Debug.Log($"ClientPointerSender: {state.ScreenPosition}, {state.IsClicking}");
     }
 }

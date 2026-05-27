@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 133980054}
   - component: {fileID: 133980053}
   m_Layer: 5
-  m_Name: Image
+  m_Name: SpectatorCursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -500,7 +500,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 741049988}
-  - component: {fileID: 741049986}
   - component: {fileID: 741049987}
   m_Layer: 0
   m_Name: ClientPointerSender
@@ -509,31 +508,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &741049986
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741049985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 579690331
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 0
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 0
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 0
-  SyncOwnerTransformWhenParented: 0
-  AllowOwnerToParent: 0
 --- !u!114 &741049987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,7 +520,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33df5f88a1745039cb76469657d5561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClientPointerSender
-  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!4 &741049988
 Transform:
   m_ObjectHideFlags: 0
@@ -1673,8 +1646,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpectatorManager
   ShowTopMostFoldoutHeaderGroup: 1
-  cursorVisual: {fileID: 133980052}
-  replayCanvas: {fileID: 1130267228}
+  cursorRectTransform: {fileID: 133980052}
+  cursorImage: {fileID: 133980053}
+  canvas: {fileID: 1130267228}
+  raycaster: {fileID: 1130267226}
   uiCamera: {fileID: 882068364}
 --- !u!1 &2041500028
 GameObject:
