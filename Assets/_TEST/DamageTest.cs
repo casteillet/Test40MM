@@ -17,9 +17,12 @@ public class DamageTest : MonoBehaviour
     {
         var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         if (!Physics.Raycast(ray, out var hit)) return;
-        
-        var damageable = hit.collider.GetComponentInParent<IDamageable>();
-        damageable.TakeDamage(ammoDefinition);
+
+        if (hit.collider.GetComponentInParent<IDamageable>() != null)
+        {
+            var damageable = hit.collider.GetComponentInParent<IDamageable>();
+            damageable.TakeDamage(ammoDefinition);
+        };
 
         Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red, 1f);
     }

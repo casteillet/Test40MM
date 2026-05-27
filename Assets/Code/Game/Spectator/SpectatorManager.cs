@@ -13,7 +13,6 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
     // TODO: Add interface Activate / Deactivate to enable or not this script and in deactivate call pointExitHandler on lastHit if exist
     
     [Header("Cursor")]
-    [SerializeField] private RectTransform cursorRectTransform;
     [SerializeField] private Image cursorImage;
     
     [Header("UI")]
@@ -91,7 +90,7 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
         pointerStates[clientId] = state;
         
-        // Debug.Log($"{clientId}: {state.ScreenPosition}, {state.IsClicking}");
+        // Debug.Log($"{clientId}: {state.screenPosition}, {state.isClicking}");
     }
     
     private void Update()
@@ -112,26 +111,13 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
     private void PointerPosition(SpectatorPointerState state)
     {
-        var viewportPosition = uiCamera.ScreenToViewportPoint(state.screenPosition);
-
-        var screenPosition = new Vector2(
-            (viewportPosition.x - .5f) * cursorRectTransform.sizeDelta.x,
-            (viewportPosition.y - .5f) * cursorRectTransform.sizeDelta.y
-        );
+        // var screenPosition = new Vector2(
+        //     (viewportPosition.x - .5f) * cursorRectTransform.sizeDelta.x,
+        //     (viewportPosition.y - .5f) * cursorRectTransform.sizeDelta.y
+        // );
         
-        // var viewportPosition = uiCamera.ScreenToViewportPoint(state.screenPosition);
-        // var screenPosition = uiCamera.ViewportToScreenPoint(viewportPosition);
-        
-        cursorRectTransform.anchoredPosition = screenPosition;
-        
-        if (state.isClicking)
-        {
-            cursorImage.color = Color.red;
-        }
-        else
-        {
-            cursorImage.color = Color.white;
-        }
+        cursorImage.transform.position = state.screenPosition;
+        cursorImage.color = state.isClicking ? Color.red : Color.white;
     }
 
     private void PointerInteraction(SpectatorPointerState state)
@@ -144,12 +130,7 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
         
         if (results.Count == 0)
         {
-            if (lastHit)
-            {
-                ExecuteEvents.ExecuteHierarchy(lastHit, eventData, ExecuteEvents.pointerExitHandler);
-                lastHit = null;
-            }
-            
+            Clear();
             return;
         }
 
@@ -157,9 +138,7 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
         if (lastHit && hit != lastHit)
         {
-            ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerExitHandler);
-            lastHit = hit;
-            
+            Clear();
             return;
         }
         
@@ -167,6 +146,7 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
         if (state.isClicking)
         {
+            ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerDownHandler);
             ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerClickHandler);
         }
         
@@ -175,11 +155,19 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
     private void ShowCursor()
     {
-        cursorRectTransform.gameObject.SetActive(true);
+        cursorImage.gameObject.SetActive(true);
     }
 
     private void HideCursor()
     {
-        cursorRectTransform.gameObject.SetActive(false);
+        cursorImage.gameObject.SetActive(false);
+    }
+
+    private void Clear()
+    {
+        if (!lastHit) return;
+        
+        ExecuteEvents.ExecuteHierarchy(lastHit, eventData, ExecuteEvents.pointerExitHandler);
+        lastHit = null;
     }
 }
