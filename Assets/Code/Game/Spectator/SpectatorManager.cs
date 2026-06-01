@@ -7,24 +7,26 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using PrimeTween;
 
 public class SpectatorManager : NetworkSingleton<SpectatorManager>
 {
     // TODO: Add interface Activate / Deactivate to enable or not this script and in deactivate call pointExitHandler on lastHit if exist
     
     [Header("Cursor")]
-    [SerializeField] private GameObject cursor;
+    [SerializeField] private RectTransform cursorRect;
     [SerializeField] private Graphic cursorClickGraphic;
     
     [Header("UI")]
-    [SerializeField] private Canvas canvas;
+    [SerializeField] private RectTransform canvasRect;
     [SerializeField] private GraphicRaycaster raycaster;
     [SerializeField] private Camera uiCamera;
 
-    private static readonly int CLICK_TIME = Shader.PropertyToID("_ClickTime");
+    private static readonly int PROGRESS_ID = Shader.PropertyToID("_Progression");
     
-    private readonly Dictionary<ulong, SpectatorPointerState> pointerStates = new();
+    private readonly Dictionary<ulong, Queue<SpectatorPointerState>> pointerStatesQueues = new();
 
+    private ClientPointerSender currentSender;
     private ulong currentSpectatedClient;
 
     private PointerEventData eventData;
@@ -77,106 +79,189 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
     
     public void SetSpectatedClient(ulong clientId)
     {
-        currentSpectatedClient = clientId;
-    }
+        if (currentSpectatedClient == clientId) return;
 
+        StopCurrentSpectatedClient();
+
+        currentSpectatedClient = clientId;
+
+        StartSpectatedClient(clientId);
+    }
+    
     public void StopSpectating()
     {
+        StopCurrentSpectatedClient();
+
         currentSpectatedClient = 0;
+
+        Clear();
+
         HideCursor();
     }
     
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void UpdatePointerServerRpc(ulong clientId, SpectatorPointerState state)
+    private void StartSpectatedClient(ulong clientId)
     {
-        if (!IsServer) return;
+        var player = NetworkManager.ConnectedClients[clientId].PlayerObject;
+        var sender = player.GetComponent<ClientPointerSender>();
+        sender.SetSpectatorListeningStateClientRpc(true);
+    }
+    
+    private void StopCurrentSpectatedClient()
+    {
+        if (currentSpectatedClient == 0) return;
 
-        pointerStates[clientId] = state;
+        var player = NetworkManager.ConnectedClients[currentSpectatedClient].PlayerObject;
+        var sender = player.GetComponent<ClientPointerSender>();
+        sender.SetSpectatorListeningStateClientRpc(false);
+    }
+    
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void UpdatePointerServerRpc(SpectatorPointerState state, RpcParams rpcParams = default)
+    {
+        var senderId = rpcParams.Receive.SenderClientId;
         
-        // Debug.Log($"{clientId}: {state.screenPosition}, {state.isClicking}");
+        if (!pointerStatesQueues.TryGetValue(senderId, out var queue))
+        {
+            queue = new Queue<SpectatorPointerState>();
+            pointerStatesQueues.Add(senderId, queue);
+        }
+
+        queue.Enqueue(state);
     }
     
     private void Update()
     {
         if (!IsServer) return;
 
-        if (!pointerStates.TryGetValue(currentSpectatedClient, out var state))
+        if (!pointerStatesQueues.TryGetValue(currentSpectatedClient, out var queue)) return;
+        
+        while (queue.Count > 0)
         {
-            HideCursor();
-            return;
+            var state = queue.Dequeue();
+
+            ProcessPointerEvent(state);
         }
-        
-        ShowCursor();
-        
+    }
+    
+    private void ProcessPointerEvent(SpectatorPointerState state)
+    {
         PointerPosition(state);
-        PointerInteraction(state);
+
+        switch (state.eventType)
+        {
+            case PointerEventType.Move:
+                PointerHover(state);
+                break;
+
+            case PointerEventType.Down:
+                PointerDown(state);
+                break;
+
+            case PointerEventType.Up:
+                PointerUp(state);
+                break;
+        }
     }
 
     private void PointerPosition(SpectatorPointerState state)
     {
-        // var screenPosition = new Vector2(
-        //     (viewportPosition.x - .5f) * cursorRectTransform.sizeDelta.x,
-        //     (viewportPosition.y - .5f) * cursorRectTransform.sizeDelta.y
-        // );
+        cursorRect.position = GetViewportToScreenPosition(state.viewportPosition);
         
-        cursor.transform.position = state.screenPosition;
-        
-        if (state.clicked)
+        if (state.eventType == PointerEventType.Down)
         {
-            // Sequence.Create()
-            //     .
-            // cursorClickGraphic.material.SetFloat(CLICK_TIME, Time.time);
+            TriggerCursorClickEffect();
         }
     }
 
-    private void PointerInteraction(SpectatorPointerState state)
+    private void TriggerCursorClickEffect()
+    {
+        ShowCursor();
+
+        Tween.MaterialProperty(cursorClickGraphic.material, PROGRESS_ID, 0, 1, .25f)
+            .OnComplete(HideCursor);
+    }
+    
+    private void PointerHover(SpectatorPointerState state)
+    {
+        var hit = GetCurrentHit(state.viewportPosition);
+
+        if (hit == lastHit) return;
+
+        if (lastHit)
+        {
+            ExecuteEvents.ExecuteHierarchy(lastHit, eventData, ExecuteEvents.pointerExitHandler);
+        }
+
+        if (hit)
+        {
+            ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerEnterHandler);
+        }
+
+        lastHit = hit;
+    }
+    
+    private void PointerDown(SpectatorPointerState state)
+    {
+        var hit = GetCurrentHit(state.viewportPosition);
+
+        if (!hit)
+        {
+            Clear();
+            return;
+        }
+        
+        ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerDownHandler);
+    }
+    
+    private void PointerUp(SpectatorPointerState state)
+    {
+        var hit = GetCurrentHit(state.viewportPosition);
+
+        if (!hit)
+        {
+            Clear();
+            return;
+        }
+
+        ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerUpHandler);
+        ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerClickHandler);
+    }
+    
+    private GameObject GetCurrentHit(Vector2 viewportPosition)
     {
         eventData.Reset();
-        eventData.position = state.screenPosition;
+        
+        eventData.position = GetViewportToScreenPosition(viewportPosition);
 
         var results = new List<RaycastResult>();
+
         raycaster.Raycast(eventData, results);
-        
-        if (results.Count == 0)
-        {
-            Clear();
-            return;
-        }
 
-        var hit = results[0].gameObject;
-
-        if (lastHit && hit != lastHit)
-        {
-            Clear();
-            return;
-        }
-        
-        ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerEnterHandler);
-
-        if (state.clicked)
-        {
-            ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerDownHandler);
-            // ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerClickHandler);
-        }
-        
-        lastHit = hit;
+        return results.Count > 0 ? results[0].gameObject : null;
+    }
+    
+    private Vector2 GetViewportToScreenPosition(Vector2 viewport)
+    {
+        return new Vector2(
+            viewport.x * Screen.width,
+            viewport.y * Screen.height
+        );
     }
 
     private void ShowCursor()
     {
-        cursor.SetActive(true);
+        cursorClickGraphic.enabled = true;
     }
 
     private void HideCursor()
     {
-        cursor.SetActive(false);
+        cursorClickGraphic.enabled = false;
     }
 
     private void Clear()
     {
-        if (!lastHit) return;
-        
-        ExecuteEvents.ExecuteHierarchy(lastHit, eventData, ExecuteEvents.pointerExitHandler);
-        lastHit = null;
+        // ExecuteEvents.ExecuteHierarchy(lastSelectedHit, eventData, ExecuteEvents.pointerExitHandler);
+        // EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(null, eventData);
     }
 }

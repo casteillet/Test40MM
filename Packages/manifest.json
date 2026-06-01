@@ -3,6 +3,7 @@
     "com.casteillet.unity-editor-tools": "https://github.com/casteillet/com.casteillet.unity-editor-tools.git",
     "com.gitamend.unityutils": "https://github.com/adammyhre/Unity-Utils.git",
     "com.kylewbanks.scenerefattribute": "https://github.com/KyleBanks/scene-ref-attribute.git",
+    "com.kyrylokuzyk.primetween": "file:../Assets/Plugins/PrimeTween/internal/com.kyrylokuzyk.primetween.tgz",
     "com.marijnzwemmer.unity-toolbar-extender": "https://github.com/marijnz/unity-toolbar-extender.git",
     "com.unity.ai.navigation": "2.0.10",
     "com.unity.collab-proxy": "2.11.3",
