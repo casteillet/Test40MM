@@ -13,13 +13,16 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
     // TODO: Add interface Activate / Deactivate to enable or not this script and in deactivate call pointExitHandler on lastHit if exist
     
     [Header("Cursor")]
-    [SerializeField] private Image cursorImage;
+    [SerializeField] private GameObject cursor;
+    [SerializeField] private Graphic cursorClickGraphic;
     
     [Header("UI")]
     [SerializeField] private Canvas canvas;
     [SerializeField] private GraphicRaycaster raycaster;
     [SerializeField] private Camera uiCamera;
 
+    private static readonly int CLICK_TIME = Shader.PropertyToID("_ClickTime");
+    
     private readonly Dictionary<ulong, SpectatorPointerState> pointerStates = new();
 
     private ulong currentSpectatedClient;
@@ -116,8 +119,14 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
         //     (viewportPosition.y - .5f) * cursorRectTransform.sizeDelta.y
         // );
         
-        cursorImage.transform.position = state.screenPosition;
-        cursorImage.color = state.isClicking ? Color.red : Color.white;
+        cursor.transform.position = state.screenPosition;
+        
+        if (state.clicked)
+        {
+            // Sequence.Create()
+            //     .
+            // cursorClickGraphic.material.SetFloat(CLICK_TIME, Time.time);
+        }
     }
 
     private void PointerInteraction(SpectatorPointerState state)
@@ -144,10 +153,10 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
         
         ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerEnterHandler);
 
-        if (state.isClicking)
+        if (state.clicked)
         {
             ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerDownHandler);
-            ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerClickHandler);
+            // ExecuteEvents.ExecuteHierarchy(hit, eventData, ExecuteEvents.pointerClickHandler);
         }
         
         lastHit = hit;
@@ -155,12 +164,12 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
 
     private void ShowCursor()
     {
-        cursorImage.gameObject.SetActive(true);
+        cursor.SetActive(true);
     }
 
     private void HideCursor()
     {
-        cursorImage.gameObject.SetActive(false);
+        cursor.SetActive(false);
     }
 
     private void Clear()

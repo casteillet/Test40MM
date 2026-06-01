@@ -10,7 +10,7 @@ public class ClientPointerSender : MonoBehaviour
         var state = new SpectatorPointerState
         {
             screenPosition = Input.mousePosition,
-            isClicking = Input.GetMouseButton(0)
+            clicked = Input.GetMouseButtonDown(0)
         };
 
         SpectatorManager.Instance.UpdatePointerServerRpc(NetworkManager.Singleton.LocalClientId, state);
