@@ -1,0 +1,23 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+[Serializable]
+public class ScenarioData : ISaveable
+{
+    [field: SerializeField] public SerializableGuid Id { get; set; }
+    public List<Scenario> Scenarios;
+}
+
+[Serializable]
+public class Scenario
+{
+    [field: SerializeField] public SerializableGuid Id;
+    public string Name;
+
+    public Scenario(string scenarioName)
+    {
+        Id = Guid.NewGuid();
+        Name = scenarioName;
+    }
+}
