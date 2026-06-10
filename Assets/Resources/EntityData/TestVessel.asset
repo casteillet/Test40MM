@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df5fb1fac78ab554d94e30e070e31c6c, type: 3}
   m_Name: TestVessel
   m_EditorClassIdentifier: Assembly-CSharp::EntityData
+  Id:
+    Part1: 575190385
+    Part2: 1232861269
+    Part3: 252901037
+    Part4: 2601880323
   entityName: TestVessel
   icon: {fileID: 21300000, guid: 0cf5a1f7ec0b8454bb40e9930a792bb7, type: 3}
   prefab: {fileID: 5330760289952115970, guid: a9a29e9aa3acec4438d5a41907584574, type: 3}

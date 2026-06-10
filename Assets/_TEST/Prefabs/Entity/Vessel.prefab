@@ -69,9 +69,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3565eb7115e276c409223a3215e846cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Entity
-  <Threat>k__BackingField: 0
   <PathFollower>k__BackingField: {fileID: 8637773344345071433}
   <Health>k__BackingField: {fileID: 4946548458246486975}
+  <Threat>k__BackingField: 0
 --- !u!114 &8637773344345071433
 MonoBehaviour:
   m_ObjectHideFlags: 0

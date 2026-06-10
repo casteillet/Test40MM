@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class ScenarioData : ISaveable
 {
-    [field: SerializeField] public SerializableGuid Id { get; set; }
+    [field: SerializeField] public SerializableGuid Id { get; set; } = SerializableGuid.NewGuid();
     public List<Scenario> Scenarios;
 }
 
@@ -17,7 +17,7 @@ public class Scenario
 
     public Scenario(string scenarioName)
     {
-        Id = Guid.NewGuid();
+        Id = SerializableGuid.NewGuid();
         Name = scenarioName;
     }
 }

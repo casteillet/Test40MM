@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewEntityData")]
 public class EntityData : ScriptableObject
 {
+    [field: SerializeField] public SerializableGuid Id = Guid.NewGuid();
+    
     [Header("Identity")]
     public string entityName;
     public Sprite icon;
