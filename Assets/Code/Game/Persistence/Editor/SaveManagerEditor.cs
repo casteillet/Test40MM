@@ -26,6 +26,11 @@ public class SaveManagerEditor : Editor
             saveLoadSystem.LoadGame(gameName);
         }
 
+        if (GUILayout.Button("Bind Datas"))
+        {
+            saveLoadSystem.BindDatas();
+        }
+
         if (GUILayout.Button("Delete Game"))
         {
             saveLoadSystem.DeleteGame(gameName);

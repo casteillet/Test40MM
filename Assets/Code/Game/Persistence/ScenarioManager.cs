@@ -5,70 +5,32 @@ using VInspector;
 public class ScenarioManager : MonoBehaviour, IBind<ScenarioData>
 {
     public SerializableGuid Id { get; set; }
-    public List<Scenario> Scenarios = new();
     
-    //[ShowInInspector] private ScenarioData scenarioData;
-    public ScenarioData scenarioData;
-    
-    private const int Capacity = 3;
-
-    private void Start()
-    {
-        Scenarios = new List<Scenario>(Capacity);
-    }
+    [SerializeField] private ScenarioData scenarioData;
 
     public void Bind(ScenarioData data)
     {
-        Debug.Log($"[ScenarioManager] Bind ScenarioData: {data}");
+        Debug.Log($"[ScenarioManager] Bind ScenarioData: {data.Scenarios.Count}");
         
         scenarioData = data;
-        data.Id = Id;
-        
-        var isNew = scenarioData.Scenarios == null || scenarioData.Scenarios.Count == 0;
-        
-        if (isNew)
-        {
-            scenarioData.Scenarios = new List<Scenario>();
-        }
-        else
-        {
-            for (var i = 0; i < Capacity; i++)
-            {
-                if (Scenarios[i] == null) continue;
-                
-                scenarioData.Scenarios[i] = Scenarios[i];
-            }
-        }
-        
-        if (isNew && Scenarios.Count != 0)
-        {
-            for (var i = 0; i < Capacity; i++)
-            {
-                if (Scenarios[i] == null) continue;
-                
-                scenarioData.Scenarios[i] = Scenarios[i];
-            }
-        }
-        
-        Scenarios = scenarioData.Scenarios;
+        scenarioData.Id = Id;
+
+        scenarioData.Scenarios = data.Scenarios ?? new List<Scenario>();
     }
 
+#if UNITY_EDITOR
     [Button]
-    private void AddScenario()
+    private void TestAddScenario()
     {
-        Scenarios.Add(new Scenario($"{Scenarios.Count}"));
+        scenarioData.Scenarios.Add(
+            new Scenario($"b{scenarioData.Scenarios.Count}")
+        );
     }
     
     [Button]
-    private void AddScenario2()
+    private void TestClearScenario()
     {
-        scenarioData.Scenarios.Add(new Scenario($"{scenarioData.Scenarios.Count}"));
+        scenarioData.Scenarios.Clear();
     }
-    
-    [Button]
-    private void DebugScenario()
-    {
-        Debug.Log($"Scenarios: {Scenarios.Count}");
-        Debug.Log($"scenarioData.Scenarios: {scenarioData.Scenarios.Count}");
-    }
+#endif
 }
