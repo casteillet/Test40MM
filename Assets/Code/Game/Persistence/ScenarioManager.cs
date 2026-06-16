@@ -10,7 +10,7 @@ public class ScenarioManager : MonoBehaviour, IBind<ScenarioData>
 
     public void Bind(ScenarioData data)
     {
-        Debug.Log($"[ScenarioManager] Bind ScenarioData: {data.Scenarios.Count}");
+        Debug.Log("[ScenarioManager] Bind ScenarioData");
         
         scenarioData = data;
         scenarioData.Id = Id;

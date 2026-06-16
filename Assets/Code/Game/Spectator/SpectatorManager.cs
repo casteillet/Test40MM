@@ -177,7 +177,7 @@ public class SpectatorManager : NetworkSingleton<SpectatorManager>
     {
         ShowCursor();
 
-        Tween.MaterialProperty(cursorClickGraphic.material, PROGRESS_ID, 0, 1, .25f)
+        Tween.MaterialProperty(cursorClickGraphic.material, PROGRESS_ID, 0, 1, .5f)
             .OnComplete(HideCursor);
     }
     
