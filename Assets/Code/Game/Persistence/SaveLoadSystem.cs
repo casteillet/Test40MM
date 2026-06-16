@@ -36,7 +36,12 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
     
     private void Start()
     {
-        NewGame();
+        if (!LoadGame(gameData.Name))
+        {
+            NewGame();
+        }
+        
+        BindDatas();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -83,8 +88,13 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
     }
     
     public void SaveGame() => dataService.Save(gameData);
-    public void LoadGame(string gameName) => gameData = dataService.Load(gameName);
     
+    public bool LoadGame(string gameName)
+    {
+        gameData = dataService.Load(gameName);
+        return gameData != null;
+    }
+
     public void BindDatas()
     {
         Bind<ScenarioManager, ScenarioData>(gameData.ScenarioData);
@@ -92,4 +102,9 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
 
     public void ReloadGame() => LoadGame(gameData.Name);
     public void DeleteGame(string gameName) => dataService.Delete(gameName);
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
 }
