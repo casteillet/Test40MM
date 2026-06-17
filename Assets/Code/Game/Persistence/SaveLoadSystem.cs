@@ -16,6 +16,8 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
 {
     [SerializeField] public GameData gameData;
 
+    private const string GameDataName = "Game";
+    
     private IDataService dataService;
     
     private void OnEnable()
@@ -33,21 +35,16 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
         base.Awake();
         dataService = new FileDataService(new JsonSerializer());
     }
-    
-    private void Start()
-    {
-        if (!LoadGame(gameData.Name))
-        {
-            NewGame();
-        }
-        
-        BindDatas();
-    }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Menu") return;
 
+        if (!LoadGame(GameDataName))
+        {
+            NewGame();
+        }
+        
         BindDatas();
     }
     
@@ -82,16 +79,23 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
     {
         gameData = new GameData()
         {
-            Name = "Game",
+            Name = GameDataName,
             ScenarioData = new ScenarioData()
         };
     }
     
-    public void SaveGame() => dataService.Save(gameData);
-    
+    public void SaveGame()
+    {
+        gameData.Name = GameDataName;
+        dataService.Save(gameData);
+        
+        Debug.Log($"Save Game");
+    }
+
     public bool LoadGame(string gameName)
     {
         gameData = dataService.Load(gameName);
+        Debug.Log($"Load Game: {gameData} with {gameName}");
         return gameData != null;
     }
 
@@ -100,7 +104,7 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
         Bind<ScenarioManager, ScenarioData>(gameData.ScenarioData);
     }
 
-    public void ReloadGame() => LoadGame(gameData.Name);
+    public void ReloadGame() => LoadGame(GameDataName);
     public void DeleteGame(string gameName) => dataService.Delete(gameName);
 
     private void OnApplicationQuit()
