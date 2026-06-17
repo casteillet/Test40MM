@@ -6,22 +6,23 @@ using VInspector;
 public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 {
     public SerializableGuid Id { get; set; }
-    public ScenarioData Data { get; private set; }
-    
+
+    private ScenarioData data;
     private Scenario currentScenario;
     
     public event Action<ScenarioData> OnScenarioDataChanged;
+    public event Action<Scenario> OnCurrentScenarioChanged;
 
     public void Bind(ScenarioData data)
     {
         Debug.Log("[ScenarioManager] Bind ScenarioData");
         
-        Data = data;
-        Data.Id = Id;
+        this.data = data;
+        this.data.Id = Id;
 
-        Data.Scenarios = data.Scenarios ?? new List<Scenario>();
+        this.data.Scenarios = data.Scenarios ?? new List<Scenario>();
         
-        OnScenarioDataChanged?.Invoke(Data);
+        OnScenarioDataChanged?.Invoke(this.data);
     }
 
     public void Load(Scenario scenario)
@@ -29,6 +30,8 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         Unload();
         
         currentScenario = scenario;
+        NotifyCurrentScenarioChanged();
+        
         Debug.Log($"[ScenarioManager] Load Scenario: {currentScenario.Name}");
     }
 
@@ -38,27 +41,38 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         {
             Debug.Log($"[ScenarioManager] Unload currentScenario: {currentScenario.Name}");
         }
-        
-        currentScenario = null;
     }
+                                                                                             
+    public void SetWeather(int weather)
+    {
+        currentScenario.WeatherType = (WeatherType)weather;
+        NotifyCurrentScenarioChanged();
+    }
+    // public void SetWeather(WeatherType weather)
+    // {
+    //     CurrentScenario.WeatherType = weather;
+    //     NotifyCurrentScenarioChanged();
+    // }
+
+    private void NotifyCurrentScenarioChanged() => OnCurrentScenarioChanged?.Invoke(currentScenario);
 
 #if UNITY_EDITOR
     [Button]
     private void TestAddScenario()
     {
-        Data.Scenarios.Add(
-            new Scenario($"{Data.Scenarios.Count}")
+        data.Scenarios.Add(
+            new Scenario($"{data.Scenarios.Count}")
         );
         
-        OnScenarioDataChanged?.Invoke(Data);
+        OnScenarioDataChanged?.Invoke(data);
     }
     
     [Button]
     private void TestRemoveLastScenario()
     {
-        Data.Scenarios.RemoveAt(Data.Scenarios.Count - 1);
+        data.Scenarios.RemoveAt(data.Scenarios.Count - 1);
         
-        OnScenarioDataChanged?.Invoke(Data);
+        OnScenarioDataChanged?.Invoke(data);
     }
 #endif
 }

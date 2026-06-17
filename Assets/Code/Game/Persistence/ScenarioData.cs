@@ -14,10 +14,18 @@ public class Scenario
 {
     [field: SerializeField] public SerializableGuid Id;
     public string Name;
+    public WeatherType WeatherType;
 
     public Scenario(string scenarioName)
     {
         Id = SerializableGuid.NewGuid();
         Name = scenarioName;
     }
+}
+
+public enum WeatherType
+{
+    Sunny,
+    Cloudy,
+    Rainy
 }
