@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using VInspector;
 
@@ -34,6 +35,12 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         
         Debug.Log($"[ScenarioManager] Load Scenario: {currentScenario.Name}");
     }
+
+    [ClientRpc]
+    public void SendScenarioDataToClients(Scenario scenario)
+    {
+        
+    } 
 
     private void Unload()
     {
