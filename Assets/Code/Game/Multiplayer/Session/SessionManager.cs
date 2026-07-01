@@ -9,18 +9,23 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
     private readonly Dictionary<ulong, Player> playersByClientId = new();
 
     public NetworkList<PlayerLobbyState> networkPlayers = new();
-    
+
     public event Action<bool> OnAllPlayersReadyChanged;
-    
+
+    public event Action<Player> OnPlayerRegistered;
+    public IEnumerable<Player> Players => playersByClientId.Values;
+
+    public bool TryGetPlayer(ulong clientId, out Player player) => playersByClientId.TryGetValue(clientId, out player);
+
     public void RegisterPlayer(Player player)
     {
         if (!IsServer || !IsSpawned) return;
-        
+
         var id = player.playerId.Value.ToString();
         var clientId = player.OwnerClientId;
-        
+
         playersByClientId[clientId] = player;
-        
+
         if (playerDataById.TryGetValue(id, out var data)) // Rejoin existing session
         {
             data.ClientId = clientId;
@@ -37,31 +42,32 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
 
             playerDataById.Add(id, newData);
         }
-        
+
         networkPlayers.Add(new PlayerLobbyState
         {
             PlayerId = id,
             ClientId = clientId,
             Spawn = player.spawn.Value,
         });
-        
+
         Debug.Log($"Player {id} connected");
 
+        OnPlayerRegistered?.Invoke(player);
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
-    
+
     public void UnregisterPlayer(Player player)
     {
         if (!IsServer) return;
-        
+
         var id = player.playerId.Value.ToString();
-        
+
         if (playerDataById.TryGetValue(id, out var data))
         {
             playersByClientId.Remove(data.ClientId);
             data.ClientId = 0;
         }
-        
+
         for (var i = 0; i < networkPlayers.Count; i++)
         {
             if (networkPlayers[i].PlayerId.ToString() == id)
@@ -75,7 +81,7 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
 
         OnAllPlayersReadyChanged?.Invoke(AllPlayersReady());
     }
-    
+
     public void AssignSpawn(string playerId, SpawnPosition spawnPosition)
     {
         if (!IsServer) return;
@@ -113,7 +119,7 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
             foreach (var other in playersByClientId.Values)
             {
                 if (other == player) continue;
-                
+
                 if (player.spawn.Value == other.spawn.Value) return false;
             }
         }

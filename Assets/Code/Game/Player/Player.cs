@@ -1,11 +1,22 @@
+using System;
+using KBCore.Refs;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerView))]
 public class Player : NetworkBehaviour
 {
     [HideInInspector] public NetworkVariable<FixedString64Bytes> playerId = new();
+    
     public NetworkVariable<SpawnPosition> spawn = new();
+
+    [field: SerializeField, Self] public PlayerView View { get; private set; }
+
+    private void OnValidate()
+    {
+        this.ValidateRefs();
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -35,8 +46,7 @@ public class Player : NetworkBehaviour
     {
         if (!PlayerPrefs.HasKey("PLAYER_ID"))
         {
-            var id = System.Guid.NewGuid().ToString();
-            PlayerPrefs.SetString("PLAYER_ID", id);
+            PlayerPrefs.SetString("PLAYER_ID", Guid.NewGuid().ToString());
         }
 
         return PlayerPrefs.GetString("PLAYER_ID");

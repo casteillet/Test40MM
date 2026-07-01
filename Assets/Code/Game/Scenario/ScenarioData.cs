@@ -22,10 +22,3 @@ public class Scenario
         Name = scenarioName;
     }
 }
-
-public enum WeatherType
-{
-    Sunny,
-    Cloudy,
-    Rainy
-}

@@ -9,13 +9,14 @@ public class PlayerSpawner : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsServer) return;
-        
-        Debug.Log("Spawning player"); // TODO: Should execute only on the connected client if join mid game
+
+        Debug.Log("Placing players"); // TODO: place only the newly-connected client if joining mid-game
 
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             var playerObj = client.PlayerObject;
-            var player = playerObj.GetComponent<Player>();
+            if (playerObj == null) continue;                                // supervisor host has no player object
+            if (!playerObj.TryGetComponent<Player>(out var player)) continue;
 
             var spawn = player.spawn.Value == SpawnPosition.Front
                 ? frontSpawn

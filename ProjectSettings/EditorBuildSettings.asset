@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Level/Scenes/Game/TestOfflineGame.unity
     guid: 78f750b34fc30de43927f9f026cea635
+  - enabled: 0
+    path: Assets/Level/Scenes/SaveLoad.unity
+    guid: 285b4e4b1c72471409c1378566da424c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
