@@ -777,7 +777,7 @@ GameObject:
   - component: {fileID: 6266277177869589028}
   - component: {fileID: 7508958420972525320}
   - component: {fileID: 3991048961148468688}
-  - component: {fileID: 8557113938602866881}
+  - component: {fileID: 6300519156679199007}
   m_Layer: 0
   m_Name: LobbyPlayerUI
   m_TagString: Untagged
@@ -844,7 +844,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8557113938602866881
+--- !u!114 &6300519156679199007
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -853,7 +853,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6571323825027133375}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d088d9e0ab7544c5a6c2f7f4071a6a58, type: 3}
+  m_Script: {fileID: 11500000, guid: b302c1d1fd8f14d45a6225ef00691361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LobbyPlayerUI
   playerIdText: {fileID: 2101452238121123639}

@@ -1,7 +1,9 @@
+using BennyKok.RuntimeDebug.Attributes;
+using BennyKok.RuntimeDebug.Components;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SpectatorController : MonoBehaviour
+public class SpectatorController : RuntimeDebugBehaviour
 {
     [SerializeField] private PlayerViewBinder binder;
 
@@ -18,5 +20,8 @@ public class SpectatorController : MonoBehaviour
         return true;
     }
     
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    [DebugAction] public void TestSpectateFirst(ulong clientId) => TrySpectate(clientId);
+#endif
     // TODO: Handle an edge case where the current spectating player disconnect, then go back to another panel and clear the binder
 }

@@ -16,8 +16,9 @@ GameObject:
   - component: {fileID: 1228194735054470612}
   - component: {fileID: 545292007402549019}
   - component: {fileID: 6499677498470099760}
-  - component: {fileID: 919196602371315548}
   - component: {fileID: 2858507189946551326}
+  - component: {fileID: 5934350898763699070}
+  - component: {fileID: 27890377284853050}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -216,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Multiplayer.Center.NetcodeForGameObjectsExample::Unity.Multiplayer.Center.NetcodeForGameObjectsExample.SetColorBasedOnOwnerId
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &919196602371315548
+--- !u!114 &2858507189946551326
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -225,7 +226,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 4317284510785978120}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7e67ef1bdfaa29947ae39274ed6a41f3, type: 3}
+  m_Script: {fileID: 11500000, guid: b33df5f88a1745039cb76469657d5561, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClientPointerSender
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &5934350898763699070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4317284510785978120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23ba34ba9c75d794db43805282a08d97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerView
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &27890377284853050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4317284510785978120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe8a233b27ee95c49b1fcaedac86216b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   ShowTopMostFoldoutHeaderGroup: 1
@@ -306,16 +333,4 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
---- !u!114 &2858507189946551326
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4317284510785978120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33df5f88a1745039cb76469657d5561, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ClientPointerSender
-  ShowTopMostFoldoutHeaderGroup: 1
+  <View>k__BackingField: {fileID: 5934350898763699070}

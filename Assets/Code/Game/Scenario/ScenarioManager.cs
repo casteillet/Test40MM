@@ -30,7 +30,7 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 
         session.OnPlayerRegistered += PushWeatherBaselineTo;
     }
-
+    
     private void OnDestroy()
     {
         if (SessionManager.Instance)

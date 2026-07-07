@@ -161,7 +161,7 @@ MonoBehaviour:
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
     Address: 127.0.0.1
-    Port: 47777
+    Port: 47677
     ServerListenAddress: 127.0.0.1
     ClientBindPort: 0
   DebugSimulator:
@@ -1563,10 +1563,6 @@ PrefabInstance:
     - target: {fileID: 6902394517540541810, guid: 1af3d862cb79d0744b0d4cbebb6af883, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1393979520
-      objectReference: {fileID: 0}
-    - target: {fileID: 6902394517540541810, guid: 1af3d862cb79d0744b0d4cbebb6af883, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 2541749861
       objectReference: {fileID: 0}
     - target: {fileID: 6978465464049857368, guid: 1af3d862cb79d0744b0d4cbebb6af883, type: 3}
       propertyPath: m_LocalPosition.x
