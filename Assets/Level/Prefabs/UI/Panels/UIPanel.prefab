@@ -54,6 +54,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIPanel
   id: 0
   activeOnStart: 0
+  canvas: {fileID: 7947497783548476854}
+  raycaster: {fileID: 953448762490550597}
+  canvasGroup: {fileID: 6561534204001113470}
+  observers: []
 --- !u!223 &7947497783548476854
 Canvas:
   m_ObjectHideFlags: 0
@@ -72,7 +76,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 1
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

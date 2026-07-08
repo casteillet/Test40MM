@@ -36,9 +36,10 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
         dataService = new FileDataService(new JsonSerializer());
     }
 
+    // TODO: LAter remove the OnSceneLoaded and just load when at start or on scenario ui panel activate in lobby scene only ?
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Menu") return;
+        if (scene.name != "Lobby") return;
 
         if (!LoadGame(GameDataName))
         {

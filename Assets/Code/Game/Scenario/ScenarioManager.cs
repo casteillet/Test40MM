@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using BennyKok.RuntimeDebug.Actions;
+using BennyKok.RuntimeDebug.Attributes;
+using BennyKok.RuntimeDebug.Systems;
 using Unity.Netcode;
 using UnityEngine;
 using VInspector;
@@ -10,7 +13,11 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 
     private ScenarioData data;
     private Scenario currentScenario;
-
+    
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private BaseDebugAction[] actions;
+#endif
+    
     public event Action<ScenarioData> OnScenarioDataChanged;
     public event Action<Scenario> OnCurrentScenarioChanged;
 
@@ -29,6 +36,11 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         }
 
         session.OnPlayerRegistered += PushWeatherBaselineTo;
+        
+        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        actions = RuntimeDebugSystem.RegisterActionsAuto(this);
+#endif
     }
     
     private void OnDestroy()
@@ -37,6 +49,11 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         {
             SessionManager.Instance.OnPlayerRegistered -= PushWeatherBaselineTo;
         }
+        
+        
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        RuntimeDebugSystem.UnregisterActions(actions);
+#endif
     }
 
     public void Bind(ScenarioData data)
@@ -125,5 +142,9 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 
         OnScenarioDataChanged?.Invoke(data);
     }
+#endif
+    
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    [DebugAction] public void TestServerSetGlobalWeather(int weatherType) => SetGlobalWeather((WeatherType)weatherType);
 #endif
 }

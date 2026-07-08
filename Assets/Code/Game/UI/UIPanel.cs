@@ -17,16 +17,6 @@ public sealed class UIPanel : ValidatedMonoBehaviour, IActivatable
     public PanelId Id => id;
     public bool IsActive { get; private set; }
 
-    // private void Awake()
-    // {
-    //     canvas = GetComponent<Canvas>();
-    //     raycaster = GetComponent<GraphicRaycaster>();
-    //     canvasGroup = GetComponent<CanvasGroup>();
-    //     observers = GetComponentsInChildren<IPanelObserver>(true);
-    //
-    //     ApplyState(activeOnStart);
-    // }
-
     private void Start()
     {
         ApplyState(activeOnStart);

@@ -572,6 +572,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerUIPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 7947497783548476854, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

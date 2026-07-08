@@ -21,7 +21,7 @@ public class SpectatorController : RuntimeDebugBehaviour
     }
     
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    [DebugAction] public void TestSpectateFirst(ulong clientId) => TrySpectate(clientId);
+    [DebugAction] public void TestSpectateFirst(int clientId) => TrySpectate((ulong)clientId);
 #endif
     // TODO: Handle an edge case where the current spectating player disconnect, then go back to another panel and clear the binder
 }
