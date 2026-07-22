@@ -6,6 +6,7 @@ public class GameManager : NetworkSingleton<GameManager>
 {
     private GameState gameState = GameState.Playing;
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     private void Update()
     {
         if (Keyboard.current.pKey.wasPressedThisFrame)
@@ -13,8 +14,9 @@ public class GameManager : NetworkSingleton<GameManager>
             TogglePause();
         }
     }
+#endif
 
-    private void TogglePause()
+    public void TogglePause()
     {
         if (!IsServer) return;
 
