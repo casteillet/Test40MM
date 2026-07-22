@@ -8,6 +8,8 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
 
+    private NetworkTransport networkTransport;
+    
     public NetworkList<PlayerLobbyState> networkPlayers = new();
 
     public event Action<bool> OnAllPlayersReadyChanged;
@@ -125,5 +127,18 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
         }
 
         return true;
+    }
+
+    private void OnApplicationQuit()
+    {
+        ShutdownNetwork();
+    }
+    
+    private void ShutdownNetwork()
+    {
+        if (NetworkManager.Singleton)
+        {
+            NetworkManager.Singleton.Shutdown();
+        }
     }
 }

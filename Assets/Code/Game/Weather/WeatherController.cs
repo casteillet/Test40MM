@@ -21,14 +21,17 @@ public class WeatherController : NetworkBehaviour
 
     private void OnDisable()
     {
-        view.OnWeatherChanged -= HandleWeatherChanged;
+        if (view)
+        {
+            view.OnWeatherChanged -= HandleWeatherChanged;
+        }
     }
-
+    
     private void Start()
     {
         GetLocalPlayerView();
     }
-
+    
     private void GetLocalPlayerView()
     {
         var local = NetworkManager.LocalClient?.PlayerObject;
