@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/Level/Scenes/Game/Game.unity
     guid: 57aa91943992dde428c62d3e1fd26f2e
   - enabled: 0
-    path: Assets/Level/Scenes/Game/TestOfflineGame.unity
+    path: Assets/Level/Scenes/TestOfflineGame.unity
     guid: 78f750b34fc30de43927f9f026cea635
   - enabled: 0
     path: Assets/Level/Scenes/SaveLoad.unity

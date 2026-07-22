@@ -19,8 +19,13 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 #endif
     
     public event Action<ScenarioData> OnScenarioDataChanged;
-    public event Action<Scenario> OnCurrentScenarioChanged;
+    
+    public event Action<Scenario> OnScenarioSaved;
+    public event Action<Scenario> OnScenarioLoaded;
+    public event Action<Scenario> OnScenarioDeleted;
 
+    public event Action OnScenarioUpdated;
+    
     public WeatherType CurrentWeather => currentScenario?.WeatherType ?? default;
 
     private void Start() // TODO: Move in OnEnable ? Need testing
@@ -32,10 +37,10 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 
         foreach (var player in session.Players)
         {
-            PushWeatherBaselineTo(player);
+            PushDefaultWeather(player);
         }
 
-        session.OnPlayerRegistered += PushWeatherBaselineTo;
+        session.OnPlayerRegistered += PushDefaultWeather;
         
         
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -47,7 +52,7 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
     {
         if (SessionManager.Instance)
         {
-            SessionManager.Instance.OnPlayerRegistered -= PushWeatherBaselineTo;
+            SessionManager.Instance.OnPlayerRegistered -= PushDefaultWeather;
         }
         
         
@@ -66,6 +71,8 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         this.data.Scenarios = data.Scenarios ?? new List<Scenario>();
 
         OnScenarioDataChanged?.Invoke(this.data);
+        
+        // TODO: Try load first scenario without notification if it exist ?
     }
 
     public void Load(Scenario scenario)
@@ -81,14 +88,15 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
                 player.View.SetDefaultWeather(currentScenario.WeatherType);
             }
         }
-
-        NotifyCurrentScenarioChanged();
-
+        
+        OnScenarioLoaded?.Invoke(currentScenario);
         Debug.Log($"[ScenarioManager] Load Scenario: {currentScenario.Name}");
     }
 
     public void SetGlobalWeather(WeatherType weather)
     {
+        Debug.Log($"NetworkManager.Singleton: {NetworkManager.Singleton}");
+
         if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
         if (currentScenario == null) return;
 
@@ -99,7 +107,7 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
             player.View.SetDefaultWeather(weather);
         }
 
-        NotifyCurrentScenarioChanged();
+        OnScenarioUpdated?.Invoke();
     }
 
     public void SetNavigation(ulong clientId, NetworkObjectReference target)
@@ -110,6 +118,8 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         {
             player.View.SetNavigation(target);
         }
+        
+        OnScenarioUpdated?.Invoke();
     }
 
     private void Unload()
@@ -120,9 +130,7 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         }
     }
 
-    private void PushWeatherBaselineTo(Player player) => player.View.SetDefaultWeather(CurrentWeather);
-
-    private void NotifyCurrentScenarioChanged() => OnCurrentScenarioChanged?.Invoke(currentScenario);
+    private void PushDefaultWeather(Player player) => player.View.SetDefaultWeather(CurrentWeather);
 
 #if UNITY_EDITOR
     [Button]
@@ -138,6 +146,8 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
     [Button]
     private void TestRemoveLastScenario()
     {
+        OnScenarioDeleted?.Invoke(data.Scenarios[^1]); // TEST ONLY
+
         data.Scenarios.RemoveAt(data.Scenarios.Count - 1);
 
         OnScenarioDataChanged?.Invoke(data);

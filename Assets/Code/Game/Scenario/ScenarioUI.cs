@@ -16,7 +16,9 @@ public class ScenarioUI : MonoBehaviour
     private void OnEnable()
     {
         ScenarioManager.Instance.OnScenarioDataChanged += OnScenarioDataChanged;
-        ScenarioManager.Instance.OnCurrentScenarioChanged += OnCurrentScenarioChanged;
+        
+        ScenarioManager.Instance.OnScenarioLoaded += OnScenarioLoaded;
+        ScenarioManager.Instance.OnScenarioUpdated += OnScenarioUpdated;
     }
     
     private void OnDisable()
@@ -24,7 +26,9 @@ public class ScenarioUI : MonoBehaviour
         if (ScenarioManager.Instance)
         {
             ScenarioManager.Instance.OnScenarioDataChanged -= OnScenarioDataChanged;
-            ScenarioManager.Instance.OnCurrentScenarioChanged -= OnCurrentScenarioChanged;
+            
+            ScenarioManager.Instance.OnScenarioLoaded -= OnScenarioLoaded;
+            ScenarioManager.Instance.OnScenarioUpdated -= OnScenarioUpdated;
         }
     }
 
@@ -41,9 +45,16 @@ public class ScenarioUI : MonoBehaviour
         SpawnButtonList();
     }
     
-    private void OnCurrentScenarioChanged(Scenario scenario)
+    private void OnScenarioLoaded(Scenario scenario)
     {
         this.scenario = scenario;
+        UpdateScenario();
+    }
+
+    private void OnScenarioUpdated() => UpdateScenario();
+
+    private void UpdateScenario()
+    {
         SetScenarioText();
         SetWeatherText();
     }
