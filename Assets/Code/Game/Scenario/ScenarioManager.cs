@@ -77,6 +77,8 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
 
     public void Load(Scenario scenario)
     {
+        if (!CanLoad()) return;
+        
         Unload();
 
         currentScenario = scenario;
@@ -91,6 +93,17 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         
         OnScenarioLoaded?.Invoke(currentScenario);
         Debug.Log($"[ScenarioManager] Load Scenario: {currentScenario.Name}");
+    }
+
+    private bool CanLoad() // TODO : lock in UI load buttons if can load is false
+    {
+        var missionManager = MissionManager.Instance;
+        if (missionManager) // In Game scene
+        {
+            return missionManager.IsMissionRunning; // Server want's to restart a mission
+        }
+
+        return true; // In Lobby scene
     }
 
     public void SetGlobalWeather(WeatherType weather)

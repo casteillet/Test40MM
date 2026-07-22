@@ -18,6 +18,9 @@ public class GameManager : NetworkSingleton<GameManager>
 
     public void TogglePause()
     {
+        // TODO: Unpause when a new mission start
+        // TODO: Can toggle only if a mission is currently running
+        
         if (!IsServer) return;
 
         gameState = gameState == GameState.Playing 

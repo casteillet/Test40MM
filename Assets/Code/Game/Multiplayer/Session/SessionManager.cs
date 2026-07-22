@@ -7,7 +7,7 @@ public class SessionManager : NetworkPersistentSingleton<SessionManager>
 {
     private readonly Dictionary<string, PlayerData> playerDataById = new();
     private readonly Dictionary<ulong, Player> playersByClientId = new();
-
+    
     private NetworkTransport networkTransport;
     
     public NetworkList<PlayerLobbyState> networkPlayers = new();
