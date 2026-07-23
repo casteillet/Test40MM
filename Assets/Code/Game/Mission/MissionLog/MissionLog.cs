@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class MissionLog
 {
-    private readonly List<MissionLogEntry> entries = new List<MissionLogEntry>();
+    private readonly List<MissionLogEntry> entries = new();
     private readonly Func<DateTime> timestampProvider;
 
     public IReadOnlyList<MissionLogEntry> Entries => entries;
@@ -25,10 +25,7 @@ public class MissionLog
 
     public void Clear()
     {
-        if (entries.Count == 0)
-        {
-            return;
-        }
+        if (entries.Count == 0) return;
 
         entries.Clear();
         Cleared?.Invoke();

@@ -15,6 +15,8 @@ public class NavigationUI : MonoBehaviour
 
     private void OnDisable()
     {
+        if (!binder) return;
+        
         binder.OnNavigationChanged -= Refresh;
     }
 

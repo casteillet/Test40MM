@@ -16,6 +16,8 @@ public class WeatherUI : MonoBehaviour
 
     private void OnDisable()
     {
+        if (view.Value == null) return;
+        
         view.Value.OnWeatherChanged -= Refresh;
     }
 

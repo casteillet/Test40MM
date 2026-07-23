@@ -31,6 +31,8 @@ public class WeaponUI : MonoBehaviour
 
     private void OnDisable()
     {
+        if (!view) return;
+        
         view.OnAmmoToFireChanged -= Refresh;
     }
 

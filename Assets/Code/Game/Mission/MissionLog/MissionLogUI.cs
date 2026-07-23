@@ -20,19 +20,19 @@ public class MissionLogUI : MonoBehaviour
     {
         formatter = new MissionLogEntryFormatter(palette);
         missionLog = MissionManager.Instance.Log;
+    }
 
+    private void OnEnable()
+    {
         RebuildFromLog();
 
         missionLog.EntryAppended += HandleEntryAppended;
         missionLog.Cleared += HandleCleared;
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
-        if (missionLog == null)
-        {
-            return;
-        }
+        if (missionLog == null) return;
 
         missionLog.EntryAppended -= HandleEntryAppended;
         missionLog.Cleared -= HandleCleared;
