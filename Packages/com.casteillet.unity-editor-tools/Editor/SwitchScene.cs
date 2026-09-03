@@ -2,23 +2,74 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEditor.Toolbars;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityToolbarExtender;
 using Object = UnityEngine.Object;
+
+[InitializeOnLoad]
+public static class SceneSwitcherToolbar
+{
+    private const string ElementPath = "Scenes/Switcher";
+
+    private const int DockIndex = -1;
+
+    static SceneSwitcherToolbar()
+    {
+        EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChanged;
+    }
+
+    [MainToolbarElement(ElementPath, defaultDockPosition = MainToolbarDockPosition.Middle, defaultDockIndex = DockIndex)]
+    private static MainToolbarElement CreateSceneSwitcher()
+    {
+        var icon = EditorGUIUtility.IconContent("UnityLogo").image as Texture2D;
+        MainToolbarContent content = new(SceneManager.GetActiveScene().name, icon, "");
+        return new MainToolbarDropdown(content, ShowSwitcherPopup);
+    }
+
+    private static void ShowSwitcherPopup(Rect activatorRect)
+    {
+        if (EditorBuildSettings.scenes.Length == 0)
+        {
+            Debug.LogWarning("No scene found in Build Settings");
+            return;
+        }
+
+        if (!HasValidBuildScene())
+        {
+            Debug.LogWarning("No valid scene found in Build Settings, please check if the scenes exist");
+            return;
+        }
+
+        PopupWindow.Show(activatorRect, new PopupSwitchScene());
+    }
+
+    private static bool HasValidBuildScene()
+    {
+        foreach (EditorBuildSettingsScene editorScene in EditorBuildSettings.scenes)
+        {
+            if (SwitchScene.SceneIsValid(editorScene))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static void OnActiveSceneChanged(Scene previous, Scene current)
+    {
+        MainToolbar.Refresh(ElementPath);
+    }
+}
 
 [InitializeOnLoad]
 public static class SwitchScene
 {
     #region Variables
-    private static Rect buttonRect;
-    
     private static string editorStartupPathScene;
-    private static string oldEditorStartupPathScene;
 
     public static string EditorStartupPathScene
     {
-        get { return editorStartupPathScene; }
+        get => editorStartupPathScene;
         set
         {
             editorStartupPathScene = value;
@@ -29,81 +80,36 @@ public static class SwitchScene
 
     static SwitchScene()
     {
-        ToolbarExtender.LeftToolbarGUI.Add(DrawLeftGUI);
         InitializePlayModeStartScene();
     }
 
-    private static void DrawLeftGUI()
-    {
-        GUILayout.FlexibleSpace();
-
-        GUIContent content = new(SceneManager.GetActiveScene().name);
-
-        if (EditorGUILayout.DropdownButton(content, FocusType.Passive, GUILayout.Width(150)))
-        {
-            if (EditorBuildSettings.scenes.Length > 0)
-            {
-                bool validScene = false;
-                foreach (EditorBuildSettingsScene editorScene in EditorBuildSettings.scenes)
-                {
-                    if (SceneIsValid(editorScene))
-                    {
-                        validScene = true;
-                        break;
-                    }
-                }
-
-                if (validScene)
-                    PopupWindow.Show(buttonRect, new PopupSwitchScene());
-                else
-                    Debug.LogWarning("No valid scene found in Build Settings, please check if the scenes exist");
-            }
-            else
-            {
-                Debug.LogWarning("No scene found in Build Settings");
-            }
-        }
-
-        if (Event.current.type == EventType.Repaint)
-            buttonRect = GUILayoutUtility.GetLastRect();
-    }
-    
     private static void InitializePlayModeStartScene()
     {
         editorStartupPathScene = EditorPrefs.GetString("EditorStartupPathScene");
         if (!string.IsNullOrEmpty(editorStartupPathScene))
-        {
             SetPlayModeStartScene(editorStartupPathScene);
-        }
     }
-    
+
     public static void SetPlayModeStartScene(string scenePath)
     {
-        if (!string.IsNullOrEmpty(scenePath))
-        {
-            SceneAsset startupScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
-            EditorSceneManager.playModeStartScene = startupScene;
-        }
-        else
-        {
-            EditorSceneManager.playModeStartScene = null;
-        }
-
-        oldEditorStartupPathScene = scenePath;
+        EditorSceneManager.playModeStartScene = string.IsNullOrEmpty(scenePath)
+            ? null
+            : AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath);
     }
 
     public static void OpenScene(string path)
     {
-        if (!Application.isPlaying)
-        {
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-        }
+        if (Application.isPlaying)
+            return;
+
+        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
     }
-    
+
     public static bool SceneIsValid(EditorBuildSettingsScene editorScene)
     {
-        if (string.IsNullOrEmpty(editorScene.path)) return false;
+        if (string.IsNullOrEmpty(editorScene.path))
+            return false;
 
         return AssetDatabase.LoadAssetAtPath<SceneAsset>(editorScene.path);
     }
@@ -301,7 +307,7 @@ public class PopupSwitchScene : PopupWindowContent
         }
     }
     #endregion
-    
+
     private void FocusDirectory(string path)
     {
         EditorUtility.FocusProjectWindow();

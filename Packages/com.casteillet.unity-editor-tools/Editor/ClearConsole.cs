@@ -1,13 +1,16 @@
-using System;
 using System.Reflection;
 using UnityEditor;
-using UnityEditor.SceneManagement;
+using UnityEditor.Toolbars;
 using UnityEngine;
-using UnityToolbarExtender;
+using UnityEngine.SceneManagement;
 
 [InitializeOnLoad]
 public static class ClearConsole
 {
+	private const string ElementPath = "Console/ClearConsole";
+	
+	private const int DockIndex = 1;
+	
 	static bool m_enabled;
 
 	static bool Enabled
@@ -24,38 +27,48 @@ public static class ClearConsole
 	{
 		m_enabled = EditorPrefs.GetBool("ClearConsoleOnSceneChanged", false);
 		EditorApplication.playModeStateChanged += OnPlayModeChanged;
-
-		ToolbarExtender.RightToolbarGUI.Add(OnToolbarGUI);
+	}
+	
+	[MainToolbarElement(ElementPath, defaultDockPosition = MainToolbarDockPosition.Middle, defaultDockIndex = DockIndex)]
+	public static MainToolbarElement CreateClearConsole()
+	{
+		var icon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow").image as Texture2D;
+		var content = new MainToolbarContent("Clear Console", icon, "");
+		return new MainToolbarToggle(content, Enabled, ToggleClearConsole);
 	}
 
 	static void OnPlayModeChanged(PlayModeStateChange playModeState)
 	{
 		if (playModeState == PlayModeStateChange.EnteredPlayMode)
-			EditorSceneManager.activeSceneChanged += OnActiveSceneChanged;
+		{
+			SceneManager.activeSceneChanged += OnActiveSceneChanged;
+		}
 		else if (playModeState == PlayModeStateChange.ExitingPlayMode)
-			EditorSceneManager.activeSceneChanged -= OnActiveSceneChanged;
+		{
+			SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+		}
 	}
 
 	private static void OnActiveSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
 	{
+		ToggleClearConsole(Enabled);
+	}
+
+	private static void ToggleClearConsole(bool value)
+	{
+		Enabled = value;
+		
 		if (Enabled)
+		{
 			ClearLog();
+		}
 	}
 
 	static void ClearLog()
 	{
-		Assembly assembly = Assembly.GetAssembly(typeof(Editor));
-		Type type = assembly.GetType("UnityEditor.LogEntries");
-		MethodInfo method = type.GetMethod("Clear");
-		method.Invoke(new object(), null);
-	}
-
-	static void OnToolbarGUI()
-	{
-		GUI.changed = false;
-
-		GUILayout.Toggle(m_enabled, new GUIContent("Clear Console", "Clear Console on scene changed during play mode"), GUI.skin.GetStyle("Button"), GUILayout.Width(150));
-		if (GUI.changed)
-			Enabled = !Enabled;
+		var assembly = Assembly.GetAssembly(typeof(Editor));
+		var type = assembly.GetType("UnityEditor.LogEntries");
+		var method = type.GetMethod("Clear");
+		method?.Invoke(new object(), null);
 	}
 }
