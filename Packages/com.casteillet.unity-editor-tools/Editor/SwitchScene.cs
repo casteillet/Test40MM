@@ -16,9 +16,15 @@ public static class SceneSwitcherToolbar
 
     static SceneSwitcherToolbar()
     {
+        SceneManager.activeSceneChanged += OnActiveSceneChanged;
         EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChanged;
     }
 
+    private static void OnActiveSceneChanged(Scene previous, Scene current)
+    {
+        MainToolbar.Refresh(ElementPath);
+    }
+    
     [MainToolbarElement(ElementPath, defaultDockPosition = MainToolbarDockPosition.Middle, defaultDockIndex = DockIndex)]
     private static MainToolbarElement CreateSceneSwitcher()
     {
@@ -54,11 +60,6 @@ public static class SceneSwitcherToolbar
 
         return false;
     }
-
-    private static void OnActiveSceneChanged(Scene previous, Scene current)
-    {
-        MainToolbar.Refresh(ElementPath);
-    }
 }
 
 [InitializeOnLoad]
@@ -86,8 +87,11 @@ public static class SwitchScene
     private static void InitializePlayModeStartScene()
     {
         editorStartupPathScene = EditorPrefs.GetString("EditorStartupPathScene");
+        
         if (!string.IsNullOrEmpty(editorStartupPathScene))
+        {
             SetPlayModeStartScene(editorStartupPathScene);
+        }
     }
 
     public static void SetPlayModeStartScene(string scenePath)
@@ -100,10 +104,31 @@ public static class SwitchScene
     public static void OpenScene(string path)
     {
         if (Application.isPlaying)
-            return;
-
-        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+        {
+            var sceneName = Path.GetFileNameWithoutExtension(path);
+            if (Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                SceneManager.LoadScene(sceneName);
+            }
+            else
+            {
+                Debug.LogError($"Scene '{sceneName}' is not in the Build Settings.");
+            }
+        }
+        else
+        {
+            if (File.Exists(path))
+            {
+                if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                {
+                    EditorSceneManager.OpenScene(path);
+                }
+            }
+            else
+            {
+                Debug.LogError($"Scene at path '{path}' does not exist.");
+            }
+        }
     }
 
     public static bool SceneIsValid(EditorBuildSettingsScene editorScene)

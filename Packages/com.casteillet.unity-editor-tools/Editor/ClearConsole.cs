@@ -33,7 +33,7 @@ public static class ClearConsole
 	public static MainToolbarElement CreateClearConsole()
 	{
 		var icon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow").image as Texture2D;
-		var content = new MainToolbarContent("Clear Console", icon, "");
+		var content = new MainToolbarContent("Clear Console", icon, "Clear console on scene changed");
 		return new MainToolbarToggle(content, Enabled, ToggleClearConsole);
 	}
 
