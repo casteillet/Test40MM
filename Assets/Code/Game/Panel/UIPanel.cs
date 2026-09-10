@@ -26,12 +26,12 @@ public sealed class UIPanel : ValidatedMonoBehaviour, IActivatable
     public void Activate() => SetVisibility(true);
     public void Deactivate() => SetVisibility(false);
 
-    private void SetVisibility(bool active)
+    private void SetVisibility(bool visible)
     {
-        if (IsActive == active) return;
+        if (IsActive == visible) return;
 
-        ApplyState(active);
-        NotifyObservers(active);
+        ApplyState(visible);
+        NotifyObservers(visible);
     }
 
     private void ApplyState(bool active)
