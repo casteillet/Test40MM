@@ -1,4 +1,5 @@
 public interface ISaveable
 {
-    SerializableGuid Id { get; set; }
+    void Save(GameData gameData);
+    void Load(GameData gameData);
 }

@@ -4,31 +4,46 @@ using BennyKok.RuntimeDebug.Actions;
 using BennyKok.RuntimeDebug.Attributes;
 using BennyKok.RuntimeDebug.Systems;
 using Unity.Netcode;
-using UnityEngine;
 using VInspector;
 
-public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
+public class ScenarioManager : Singleton<ScenarioManager>, ISaveable
 {
-    public SerializableGuid Id { get; set; }
-
     private ScenarioData data;
     private Scenario currentScenario;
-    
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     private BaseDebugAction[] actions;
 #endif
-    
-    public event Action<ScenarioData> OnScenarioDataChanged;
-    
-    public event Action<Scenario> OnScenarioSaved;
-    public event Action<Scenario> OnScenarioLoaded;
-    public event Action<Scenario> OnScenarioDeleted;
 
+    public event Action<ScenarioData> OnScenarioDataChanged;
+    public event Action<Scenario> OnScenarioSelected;
+    public event Action<Scenario> OnScenarioDeleted;
     public event Action OnScenarioUpdated;
-    
+
+    public event Action<bool> OnDirtyChanged;
+    public bool IsDirty { get; private set; }
+
     public WeatherType CurrentWeather => currentScenario?.WeatherType ?? default;
 
-    private void Start() // TODO: Move in OnEnable ? Need testing
+    private void OnEnable()
+    {
+        var saveLoadSystem = SaveLoadSystem.Instance;
+        if (!saveLoadSystem) return;
+
+        saveLoadSystem.Register(this);
+        saveLoadSystem.OnGameSaved += HandleGameSaved;
+    }
+
+    private void OnDisable()
+    {
+        if (!SaveLoadSystem.HasInstance) return;
+
+        var saveLoadSystem = SaveLoadSystem.Instance;
+        saveLoadSystem.OnGameSaved -= HandleGameSaved;
+        saveLoadSystem.Unregister(this);
+    }
+
+    private void Start()
     {
         if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
 
@@ -41,45 +56,62 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         }
 
         session.OnPlayerRegistered += PushDefaultWeather;
-        
-        
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         actions = RuntimeDebugSystem.RegisterActionsAuto(this);
 #endif
     }
-    
+
     private void OnDestroy()
     {
         if (SessionManager.Instance)
         {
             SessionManager.Instance.OnPlayerRegistered -= PushDefaultWeather;
         }
-        
-        
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         RuntimeDebugSystem.UnregisterActions(actions);
 #endif
     }
 
-    public void Bind(ScenarioData data)
+    public void Save(GameData gameData)
     {
-        Debug.Log("[ScenarioManager] Bind ScenarioData");
-
-        this.data = data;
-        this.data.Id = Id;
-
-        this.data.Scenarios = data.Scenarios ?? new List<Scenario>();
-
-        OnScenarioDataChanged?.Invoke(this.data);
-        
-        // TODO: Try load first scenario without notification if it exist ?
+        gameData.ScenarioData = data;
     }
 
-    public void Load(Scenario scenario)
+    public void Load(GameData gameData)
     {
-        if (!CanLoad()) return;
-        
-        Unload();
+        data = gameData.ScenarioData ??= new ScenarioData();
+        data.Scenarios ??= new List<Scenario>();
+
+        OnScenarioDataChanged?.Invoke(data);
+        SetDirty(false);
+    }
+
+    public void AddScenario(string scenarioName)
+    {
+        data.Scenarios.Add(new Scenario(scenarioName));
+
+        OnScenarioDataChanged?.Invoke(data);
+        SetDirty(true);
+    }
+
+    public void DeleteScenario(Scenario scenario)
+    {
+        if (!data.Scenarios.Remove(scenario)) return;
+
+        if (currentScenario == scenario) Deselect();
+
+        OnScenarioDeleted?.Invoke(scenario);
+        OnScenarioDataChanged?.Invoke(data);
+        SetDirty(true);
+    }
+
+    public void Select(Scenario scenario)
+    {
+        if (!CanSelect()) return;
+
+        Deselect();
 
         currentScenario = scenario;
 
@@ -90,26 +122,12 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
                 player.View.SetDefaultWeather(currentScenario.WeatherType);
             }
         }
-        
-        OnScenarioLoaded?.Invoke(currentScenario);
-        Debug.Log($"[ScenarioManager] Load Scenario: {currentScenario.Name}");
-    }
 
-    private bool CanLoad() // TODO : lock in UI load buttons if can load is false
-    {
-        var missionManager = MissionManager.Instance;
-        if (missionManager) // In Game scene
-        {
-            return missionManager.IsMissionRunning; // Server want's to restart a mission
-        }
-
-        return true; // In Lobby scene
+        OnScenarioSelected?.Invoke(currentScenario);
     }
 
     public void SetGlobalWeather(WeatherType weather)
     {
-        Debug.Log($"NetworkManager.Singleton: {NetworkManager.Singleton}");
-
         if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
         if (currentScenario == null) return;
 
@@ -131,42 +149,49 @@ public class ScenarioManager : Singleton<ScenarioManager>, IBind<ScenarioData>
         {
             player.View.SetNavigation(target);
         }
-        
+
         OnScenarioUpdated?.Invoke();
     }
 
-    private void Unload()
+    private bool CanSelect()
     {
-        if (currentScenario != null)
+        var missionManager = MissionManager.Instance;
+        if (missionManager)
         {
-            Debug.Log($"[ScenarioManager] Unload currentScenario: {currentScenario.Name}");
+            return missionManager.IsMissionRunning;
         }
+
+        return true;
+    }
+
+    private void Deselect()
+    {
+        currentScenario = null;
     }
 
     private void PushDefaultWeather(Player player) => player.View.SetDefaultWeather(CurrentWeather);
 
-#if UNITY_EDITOR
-    [Button]
-    private void TestAddScenario()
-    {
-        data.Scenarios.Add(
-            new Scenario($"{data.Scenarios.Count}")
-        );
+    private void HandleGameSaved() => SetDirty(false);
 
-        OnScenarioDataChanged?.Invoke(data);
+    private void SetDirty(bool value)
+    {
+        if (IsDirty == value) return;
+
+        IsDirty = value;
+        OnDirtyChanged?.Invoke(value);
     }
+
+#if UNITY_EDITOR
+    [Button] private void TestAddScenario() => AddScenario($"{data.Scenarios.Count}");
 
     [Button]
     private void TestRemoveLastScenario()
     {
-        OnScenarioDeleted?.Invoke(data.Scenarios[^1]); // TEST ONLY
-
-        data.Scenarios.RemoveAt(data.Scenarios.Count - 1);
-
-        OnScenarioDataChanged?.Invoke(data);
+        if (data.Scenarios.Count == 0) return;
+        DeleteScenario(data.Scenarios[^1]);
     }
 #endif
-    
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     [DebugAction] public void TestServerSetGlobalWeather(int weatherType) => SetGlobalWeather((WeatherType)weatherType);
 #endif

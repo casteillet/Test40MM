@@ -167,11 +167,6 @@ MonoBehaviour:
   gameData:
     Name: 
     ScenarioData:
-      <Id>k__BackingField:
-        Part1: 0
-        Part2: 0
-        Part3: 0
-        Part4: 0
       Scenarios: []
 --- !u!1 &284368345
 GameObject:

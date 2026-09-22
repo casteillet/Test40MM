@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class ScenarioData : ISaveable
+public class ScenarioData
 {
-    [field: SerializeField] public SerializableGuid Id { get; set; } = SerializableGuid.NewGuid();
     public List<Scenario> Scenarios;
 }
 

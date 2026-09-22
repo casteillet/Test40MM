@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Systems.Persistence;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [Serializable]
 public class GameData
-{ 
+{
     public string Name;
     public ScenarioData ScenarioData;
 }
@@ -17,99 +15,82 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
     [SerializeField] public GameData gameData;
 
     private const string GameDataName = "Game";
-    
-    private IDataService dataService;
-    
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
 
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-    
+    private readonly HashSet<ISaveable> saveables = new();
+    private IDataService dataService;
+
+    public event Action OnGameSaved;
+    public event Action OnGameLoaded;
+    public event Action OnGameDeleted;
+
     protected override void Awake()
     {
         base.Awake();
         dataService = new FileDataService(new JsonSerializer());
-    }
 
-    // TODO: LAter remove the OnSceneLoaded and just load when at start or on scenario ui panel activate in lobby scene only ?
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name != "Lobby") return;
-
-        if (!LoadGame(GameDataName))
+        if (!LoadGame())
         {
             NewGame();
         }
-        
-        BindDatas();
-    }
-    
-    private void Bind<T, TData>(TData data) where T : MonoBehaviour, IBind<TData> where TData : ISaveable, new()
-    {
-        var entity = FindObjectsByType<T>(FindObjectsSortMode.None).FirstOrDefault();
-        if (!entity) return;
-        
-        data ??= new TData { Id = entity.Id };
-        entity.Bind(data);
     }
 
-    private void Bind<T, TData>(List<TData> datas) where T: MonoBehaviour, IBind<TData> where TData : ISaveable, new()
+    public void Register(ISaveable saveable)
     {
-        var entities = FindObjectsByType<T>(FindObjectsSortMode.None);
-
-        foreach(var entity in entities)
-        {
-            var data = datas.FirstOrDefault(d=> d.Id == entity.Id);
-            
-            if (data == null)
-            {
-                data = new TData { Id = entity.Id };
-                datas.Add(data); 
-            }
-            
-            entity.Bind(data);
-        }
+        if (!saveables.Add(saveable)) return;
+        if (gameData != null) saveable.Load(gameData);
     }
+
+    public void Unregister(ISaveable saveable) => saveables.Remove(saveable);
 
     public void NewGame()
     {
-        gameData = new GameData()
+        gameData = new GameData
         {
             Name = GameDataName,
             ScenarioData = new ScenarioData()
         };
+
+        PushToSaveables();
     }
-    
+
     public void SaveGame()
     {
         gameData.Name = GameDataName;
+
+        foreach (var saveable in saveables)
+        {
+            saveable.Save(gameData);
+        }
+
         dataService.Save(gameData);
-        
-        Debug.Log($"Save Game");
+        OnGameSaved?.Invoke();
     }
 
-    public bool LoadGame(string gameName)
+    public bool LoadGame()
     {
-        gameData = dataService.Load(gameName);
-        Debug.Log($"Load Game: {gameData} with {gameName}");
-        return gameData != null;
+        var loaded = dataService.Load(GameDataName);
+        if (loaded == null) return false;
+
+        gameData = loaded;
+
+        PushToSaveables();
+        OnGameLoaded?.Invoke();
+        return true;
     }
 
-    public void BindDatas()
+    public void ReloadGame() => LoadGame();
+
+    public void DeleteGame()
     {
-        Bind<ScenarioManager, ScenarioData>(gameData.ScenarioData);
+        dataService.Delete(GameDataName);
+        OnGameDeleted?.Invoke();
     }
 
-    public void ReloadGame() => LoadGame(GameDataName);
-    public void DeleteGame(string gameName) => dataService.Delete(gameName);
-
-    private void OnApplicationQuit()
+    private void PushToSaveables()
     {
-        SaveGame();
+        foreach (var saveable in saveables)
+        {
+            saveable.Load(gameData);
+        }
     }
 }

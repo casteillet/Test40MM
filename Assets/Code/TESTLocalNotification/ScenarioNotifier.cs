@@ -2,41 +2,48 @@ using UnityEngine;
 
 public class ScenarioNotifier : MonoBehaviour
 {
-    private const string savedTitle = "Sauvegardé";
-    private const string loadedTitle = "Chargé";
-    private const string deletedTitle = "Supprimé";
-    
-    private void Start()
+    private const string SavedTitle = "Sauvegardé";
+    private const string LoadedTitle = "Chargé";
+    private const string DeletedTitle = "Supprimé";
+
+    private void OnEnable()
     {
-        ScenarioManager.Instance.OnScenarioSaved += OnScenarioSaved;
-        ScenarioManager.Instance.OnScenarioLoaded += OnScenarioLoaded;
-        ScenarioManager.Instance.OnScenarioDeleted += OnScenarioDeleted;
+        var saveLoadSystem = SaveLoadSystem.Instance;
+        if (saveLoadSystem)
+        {
+            saveLoadSystem.OnGameSaved += OnGameSaved;
+            saveLoadSystem.OnGameLoaded += OnGameLoaded;
+        }
+
+        var scenarioManager = ScenarioManager.Instance;
+        if (scenarioManager)
+        {
+            scenarioManager.OnScenarioDeleted += OnScenarioDeleted;
+        }
     }
 
-    private void OnScenarioSaved(Scenario scenario)
+    private void OnDisable()
     {
-        var notification = new LocalNotification(savedTitle, $"{scenario.Name} sauvegardé", NotificationType.Success);
-        LocalNotificationManager.Instance.Show(notification);
-    }
-    
-    private void OnScenarioLoaded(Scenario scenario)
-    {
-        var notification = new LocalNotification(loadedTitle, $"{scenario.Name} chargé", NotificationType.Info);
-        LocalNotificationManager.Instance.Show(notification);
+        if (SaveLoadSystem.HasInstance)
+        {
+            var saveLoadSystem = SaveLoadSystem.Instance;
+            saveLoadSystem.OnGameSaved -= OnGameSaved;
+            saveLoadSystem.OnGameLoaded -= OnGameLoaded;
+        }
+
+        if (ScenarioManager.HasInstance)
+        {
+            ScenarioManager.Instance.OnScenarioDeleted -= OnScenarioDeleted;
+        }
     }
 
-    private void OnScenarioDeleted(Scenario scenario)
-    {
-        var notification = new LocalNotification(deletedTitle, $"{scenario.Name} supprimé", NotificationType.Info);
-        LocalNotificationManager.Instance.Show(notification);
-    }
+    private void OnGameSaved() => Show(SavedTitle, "Scénarios sauvegardés", NotificationType.Success);
+    private void OnGameLoaded() => Show(LoadedTitle, "Scénarios chargés", NotificationType.Info);
+    private void OnScenarioDeleted(Scenario scenario) => Show(DeletedTitle, $"{scenario.Name} supprimé", NotificationType.Info);
 
-    private void OnDestroy()
+    private void Show(string title, string message, NotificationType type)
     {
-        if (!ScenarioManager.Instance) return;
-        
-        ScenarioManager.Instance.OnScenarioSaved += OnScenarioSaved;
-        ScenarioManager.Instance.OnScenarioLoaded += OnScenarioLoaded;
-        ScenarioManager.Instance.OnScenarioDeleted += OnScenarioDeleted;
+        var notification = new LocalNotification(title, message, type);
+        LocalNotificationManager.Instance.Show(notification);
     }
 }
