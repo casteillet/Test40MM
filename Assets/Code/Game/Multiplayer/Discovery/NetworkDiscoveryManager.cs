@@ -1,125 +1,141 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Net;
 using System.Net.NetworkInformation;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityUtils;
 using VInspector;
 
 public class NetworkDiscoveryManager : NetworkDiscovery<DiscoveryBroadcastData, DiscoveryResponseData>
 {
-    [Serializable] public class ServerFoundEvent : UnityEvent<IPEndPoint, DiscoveryResponseData> { };
-    
-#if UNITY_EDITOR
     private enum ConnectionTestType { Wireless, Local }
-    
+
+    private const string ListenOnAllInterfacesAddress = "0.0.0.0";
+
     [Header("Debug")]
     [SerializeField] private bool localTestMode;
-    [ShowIf("localTestMode"), SerializeField] private ConnectionTestType connectionTestType;[EndIf]
-#endif
-    
-    private Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new();
-    
-    public string serverName = "Server";
-    
-    
-    private void Start()
-    {
-        var unityTransport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+    [ShowIf(nameof(localTestMode))]
+    [SerializeField] private ConnectionTestType connectionTestType;
+    [EndIf]
 
-        var ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Ethernet);
-        
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (localTestMode)
+    [Header("Session")]
+    [SerializeField] private string serverName = "Server";
+    [SerializeField] private bool autoConnectToFirstServer = true;
+
+    public event Action<IPEndPoint, DiscoveryResponseData> ServerDiscovered;
+
+    private static UnityTransport Transport => (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+
+    private bool IsLocalTestModeEnabled
+    {
+        get
         {
-            if (connectionTestType == ConnectionTestType.Wireless)
-            {
-                ipAddress = NetworkHelper.GetLocalIPv4(NetworkInterfaceType.Wireless80211);
-            }
-            else if (connectionTestType == ConnectionTestType.Local)
-            {
-                unityTransport.SetConnectionData(unityTransport.ConnectionData.Address, Port);
-                return;
-            }
-        }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            return localTestMode;
+#else
+            return false;
 #endif
-        
-        if (ipAddress.IsNullOrEmpty()) return;
-        
-        unityTransport.SetConnectionData(ipAddress, Port);
+        }
     }
 
-    protected override bool ProcessBroadcast(IPEndPoint sender, DiscoveryBroadcastData broadCast, out DiscoveryResponseData response)
+    private bool UsesLoopbackTest => IsLocalTestModeEnabled && connectionTestType == ConnectionTestType.Local;
+
+    private bool UsesWirelessTest => IsLocalTestModeEnabled && connectionTestType == ConnectionTestType.Wireless;
+
+    protected override IPAddress BroadcastAddress => UsesLoopbackTest ? IPAddress.Loopback : base.BroadcastAddress;
+
+    private void Start()
     {
-        response = new DiscoveryResponseData()
+        ConfigureTransportAddress();
+    }
+
+    public void StartServerNetwork()
+    {
+        StartSession(NetworkManager.Singleton.StartServer);
+    }
+
+    public void StartHostNetwork()
+    {
+        StartSession(NetworkManager.Singleton.StartHost);
+    }
+
+    public void StartClientNetwork()
+    {
+        if (!TryStartClientDiscovery()) return;
+
+        SendClientBroadcast(new DiscoveryBroadcastData());
+    }
+
+    public void ConnectToServer(IPEndPoint serverEndPoint, DiscoveryResponseData response)
+    {
+        if (NetworkManager.Singleton.IsListening) return;
+
+        string serverAddress = UsesLoopbackTest ? Transport.ConnectionData.Address : serverEndPoint.Address.ToString();
+        Transport.SetConnectionData(serverAddress, response.Port);
+
+        if (NetworkManager.Singleton.StartClient())
+        {
+            StopDiscovery();
+        }
+        else
+        {
+            Debug.LogError($"Failed to connect to server '{response.ServerName}' at {serverAddress}:{response.Port}.");
+        }
+    }
+
+    protected override bool ProcessBroadcast(IPEndPoint sender, DiscoveryBroadcastData broadcast, out DiscoveryResponseData response)
+    {
+        response = new DiscoveryResponseData
         {
             ServerName = serverName,
-            Port = ((UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport).ConnectionData.Port,
+            Port = Transport.ConnectionData.Port,
         };
-        
+
         return true;
     }
 
     protected override void ResponseReceived(IPEndPoint sender, DiscoveryResponseData response)
     {
-        OnServerFound(sender, response);
-    }
-    
-    private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)
-    {
-        discoveredServers[sender.Address] = response;
-        TryConnectToDiscoveredServer();
-    }
+        ServerDiscovered?.Invoke(sender, response);
 
-    public void TryConnectToDiscoveredServer()
-    {
-        var discoveredServer = discoveredServers.First();
-        
-        var transport = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (localTestMode)
+        if (autoConnectToFirstServer)
         {
-            if (connectionTestType == ConnectionTestType.Local)
-            {
-                var address = (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-                transport.SetConnectionData(address.ConnectionData.Address, discoveredServer.Value.Port);
-            }
+            ConnectToServer(sender, response);
         }
-#else
-        transport.SetConnectionData(discoveredServer.Key.ToString(), discoveredServer.Value.Port);
-#endif   
-        Debug.Log($"a Address: {transport.ConnectionData.Address}, Port: {transport.ConnectionData.Port}");
-        Debug.Log($"b Address: {discoveredServer.Key}, Port: {discoveredServer.Value.Port}");
-
-         if (NetworkManager.Singleton.StartClient())
-         {
-             StartCoroutine(StopDiscoveryCoroutine());
-         }
     }
 
-    private IEnumerator StopDiscoveryCoroutine()
+    private void StartSession(Func<bool> startNetworkManager)
     {
-        yield return new WaitForEndOfFrame();
-        StopDiscovery();
-    }
-    
-    public void StartServerNetwork()
-    {
-        if (!NetworkManager.Singleton.StartServer()) return;
-        
-        StartServer();
+        if (!HasDistinctPorts()) return;
+        if (!TryStartServerDiscovery()) return;
+
+        if (!startNetworkManager())
+        {
+            StopDiscovery();
+            return;
+        }
+
         NetworkSceneManager.Instance.LoadLobbyAsServer();
     }
-    
-    public void StartClientNetwork()
+
+    private void ConfigureTransportAddress()
     {
-        StartClient();
-        ClientBroadcast(new DiscoveryBroadcastData());
+        if (UsesLoopbackTest) return;
+
+        NetworkInterfaceType interfaceType = UsesWirelessTest ? NetworkInterfaceType.Wireless80211 : NetworkInterfaceType.Ethernet;
+        string localAddress = NetworkHelper.GetLocalIPv4(interfaceType);
+
+        if (localAddress.IsNullOrEmpty()) return;
+
+        Transport.SetConnectionData(localAddress, Transport.ConnectionData.Port, ListenOnAllInterfacesAddress);
+    }
+
+    private bool HasDistinctPorts()
+    {
+        if (Transport.ConnectionData.Port != DiscoveryPort) return true;
+
+        Debug.LogError($"{nameof(UnityTransport)} and {nameof(NetworkDiscoveryManager)} both use port {DiscoveryPort}. Give them different ports.");
+        return false;
     }
 }

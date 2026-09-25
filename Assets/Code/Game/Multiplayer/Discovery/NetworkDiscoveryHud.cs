@@ -1,106 +1,74 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using KBCore.Refs;
 using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class NetworkDiscoveryHud : ValidatedMonoBehaviour
 {
-    [Self, SerializeField] private NetworkDiscoveryManager networkDiscoveryManager;
-    
-    private NetworkManager networkManager;
-    private Dictionary<IPAddress, DiscoveryResponseData> discoveredServers = new();
+    private const float AreaWidth = 200f;
+    private const float AreaHeight = 600f;
+    private const float ServerListSpacing = 40f;
 
-    public Vector2 DrawOffset = new(10, 210);
+    [Self, SerializeField] private NetworkDiscoveryManager networkDiscoveryManager;
+    [SerializeField, FormerlySerializedAs("DrawOffset")] private Vector2 drawOffset = new(10, 210);
+
+    private readonly Dictionary<IPEndPoint, DiscoveryResponseData> discoveredServers = new();
+    private NetworkManager networkManager;
+
+    private void OnEnable()
+    {
+        networkDiscoveryManager.ServerDiscovered += OnServerDiscovered;
+    }
+
+    private void OnDisable()
+    {
+        networkDiscoveryManager.ServerDiscovered -= OnServerDiscovered;
+    }
 
     private void Start()
     {
         networkManager = NetworkManager.Singleton;
-        
-        //networkDiscoveryManager.onServerFound.AddListener(OnServerFound);
     }
 
-    private void OnServerFound(IPEndPoint sender, DiscoveryResponseData response)
+    private void OnServerDiscovered(IPEndPoint serverEndPoint, DiscoveryResponseData response)
     {
-        discoveredServers[sender.Address] = response;
+        discoveredServers[serverEndPoint] = response;
     }
 
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(DrawOffset, new Vector2(200, 600)));
+        if (networkManager == null) return;
 
-        if (networkManager.IsServer || networkManager.IsClient)
+        GUILayout.BeginArea(new Rect(drawOffset, new Vector2(AreaWidth, AreaHeight)));
+
+        if (networkManager.IsListening)
         {
-            // if (networkManager.IsServer)
-            // {
-            //     ServerControlsGUI();
-            // }
-            
-            if (GUILayout.Button("Shutdown"))
-            {
-                networkManager.Shutdown();
-                networkDiscoveryManager.StopDiscovery();
-            }
+            DrawSessionControls();
         }
         else
         {
-            ClientSearchGUI();
+            DrawLauncherControls();
         }
 
         GUILayout.EndArea();
     }
 
-    private void ClientSearchGUI()
+    private void DrawSessionControls()
     {
-        if (GUILayout.Button("Start Server"))
+        if (networkManager.IsServer)
         {
-            networkManager.StartServer();
+            DrawServerDiscoveryControls();
         }
-        
-        if (GUILayout.Button("Start Host"))
+
+        if (GUILayout.Button("Shutdown"))
         {
-            networkManager.StartHost();
-        }
-        
-        if (networkDiscoveryManager.IsRunning)
-        {
-            if (GUILayout.Button("Stop Client Discovery"))
-            {
-                networkDiscoveryManager.StopDiscovery();
-                discoveredServers.Clear();
-            }
-            
-            if (GUILayout.Button("Refresh List"))
-            {
-                discoveredServers.Clear();
-                networkDiscoveryManager.ClientBroadcast(new DiscoveryBroadcastData());
-            }
-            
-            GUILayout.Space(40);
-            
-            foreach (var discoveredServer in discoveredServers)
-            {
-                if (GUILayout.Button($"{discoveredServer.Value.ServerName}[{discoveredServer.Key}]"))
-                {
-                    var transport = (UnityTransport)networkManager.NetworkConfig.NetworkTransport;
-                    transport.SetConnectionData(discoveredServer.Key.ToString(), discoveredServer.Value.Port);
-                    Debug.Log($"Address: {discoveredServer.Key}, Port: {discoveredServer.Value.Port}");
-                    networkManager.StartClient();
-                }
-            }
-        }
-        else
-        {
-            if (GUILayout.Button("Discover Servers"))
-            {
-                networkDiscoveryManager.StartClient();
-                networkDiscoveryManager.ClientBroadcast(new DiscoveryBroadcastData());
-            }
+            ShutdownSession();
         }
     }
 
-    private void ServerControlsGUI()
+    private void DrawServerDiscoveryControls()
     {
         if (networkDiscoveryManager.IsRunning)
         {
@@ -109,12 +77,65 @@ public class NetworkDiscoveryHud : ValidatedMonoBehaviour
                 networkDiscoveryManager.StopDiscovery();
             }
         }
-        else
+        else if (GUILayout.Button("Start Server Discovery"))
         {
-            if (GUILayout.Button("Start Server Discovery"))
-            {
-                networkDiscoveryManager.StartServer();
-            }
+            networkDiscoveryManager.TryStartServerDiscovery();
         }
+    }
+
+    private void DrawLauncherControls()
+    {
+        if (GUILayout.Button("Start Server"))
+        {
+            networkDiscoveryManager.StartServerNetwork();
+        }
+
+        if (GUILayout.Button("Start Host"))
+        {
+            networkDiscoveryManager.StartHostNetwork();
+        }
+
+        if (networkDiscoveryManager.IsClient)
+        {
+            DrawClientDiscoveryControls();
+        }
+        else if (GUILayout.Button("Discover Servers"))
+        {
+            discoveredServers.Clear();
+            networkDiscoveryManager.StartClientNetwork();
+        }
+    }
+
+    private void DrawClientDiscoveryControls()
+    {
+        if (GUILayout.Button("Stop Client Discovery"))
+        {
+            networkDiscoveryManager.StopDiscovery();
+            discoveredServers.Clear();
+            return;
+        }
+
+        if (GUILayout.Button("Refresh List"))
+        {
+            discoveredServers.Clear();
+            networkDiscoveryManager.SendClientBroadcast(new DiscoveryBroadcastData());
+        }
+
+        GUILayout.Space(ServerListSpacing);
+
+        foreach (KeyValuePair<IPEndPoint, DiscoveryResponseData> discoveredServer in discoveredServers)
+        {
+            if (!GUILayout.Button($"{discoveredServer.Value.ServerName} [{discoveredServer.Key.Address}]")) continue;
+
+            networkDiscoveryManager.ConnectToServer(discoveredServer.Key, discoveredServer.Value);
+            break;
+        }
+    }
+
+    private void ShutdownSession()
+    {
+        networkManager.Shutdown();
+        networkDiscoveryManager.StopDiscovery();
+        discoveredServers.Clear();
     }
 }
