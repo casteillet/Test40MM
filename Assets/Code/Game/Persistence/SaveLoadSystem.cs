@@ -80,6 +80,11 @@ public class SaveLoadSystem : PersistentSingleton<SaveLoadSystem>
 
     public void ReloadGame() => LoadGame();
 
+    public void DiscardChanges()
+    {
+        if (!LoadGame()) NewGame();
+    }
+
     public void DeleteGame()
     {
         dataService.Delete(GameDataName);

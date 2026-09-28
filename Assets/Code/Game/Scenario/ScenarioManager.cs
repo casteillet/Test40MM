@@ -23,6 +23,11 @@ public class ScenarioManager : Singleton<ScenarioManager>, ISaveable
     public event Action<bool> OnDirtyChanged;
     public bool IsDirty { get; private set; }
 
+    public ScenarioEditMode CurrentMode =>
+        MissionManager.HasInstance ? ScenarioEditMode.Live : ScenarioEditMode.Editing;
+
+    public ScenarioData CurrentData => data;
+    public Scenario CurrentScenario => currentScenario;
     public WeatherType CurrentWeather => currentScenario?.WeatherType ?? default;
 
     private void OnEnable()
@@ -117,37 +122,38 @@ public class ScenarioManager : Singleton<ScenarioManager>, ISaveable
 
         if (NetworkManager.Singleton && NetworkManager.Singleton.IsServer)
         {
-            foreach (var player in SessionManager.Instance.Players)
-            {
-                player.View.SetDefaultWeather(currentScenario.WeatherType);
-            }
+            PushWeatherToPlayers(currentScenario.WeatherType);
         }
 
         OnScenarioSelected?.Invoke(currentScenario);
     }
 
-    public void SetGlobalWeather(WeatherType weather)
-    {
-        if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
-        if (currentScenario == null) return;
-
-        currentScenario.WeatherType = weather;
-
-        foreach (var player in SessionManager.Instance.Players)
-        {
-            player.View.SetDefaultWeather(weather);
-        }
-
-        OnScenarioUpdated?.Invoke();
-    }
+    public void SetWeather(WeatherType weather) => Edit(
+        () => currentScenario.WeatherType = weather,
+        () => PushWeatherToPlayers(weather));
 
     public void SetNavigation(ulong clientId, NetworkObjectReference target)
     {
         if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
 
-        if (SessionManager.Instance.TryGetPlayer(clientId, out var player))
+        PushNavigation(clientId, target);
+        OnScenarioUpdated?.Invoke();
+    }
+
+    private void Edit(Action authoring, Action live)
+    {
+        if (CurrentMode == ScenarioEditMode.Editing)
         {
-            player.View.SetNavigation(target);
+            if (currentScenario == null) return;
+
+            authoring();
+            SetDirty(true);
+        }
+        else
+        {
+            if (!NetworkManager.Singleton || !NetworkManager.Singleton.IsServer) return;
+
+            live();
         }
 
         OnScenarioUpdated?.Invoke();
@@ -155,18 +161,30 @@ public class ScenarioManager : Singleton<ScenarioManager>, ISaveable
 
     private bool CanSelect()
     {
-        var missionManager = MissionManager.Instance;
-        if (missionManager)
-        {
-            return missionManager.IsMissionRunning;
-        }
+        if (CurrentMode == ScenarioEditMode.Editing) return true;
 
-        return true;
+        return MissionManager.Instance.IsMissionRunning;
     }
 
     private void Deselect()
     {
         currentScenario = null;
+    }
+
+    private void PushWeatherToPlayers(WeatherType weather)
+    {
+        foreach (var player in SessionManager.Instance.Players)
+        {
+            player.View.SetDefaultWeather(weather);
+        }
+    }
+
+    private void PushNavigation(ulong clientId, NetworkObjectReference target)
+    {
+        if (SessionManager.Instance.TryGetPlayer(clientId, out var player))
+        {
+            player.View.SetNavigation(target);
+        }
     }
 
     private void PushDefaultWeather(Player player) => player.View.SetDefaultWeather(CurrentWeather);
@@ -193,6 +211,6 @@ public class ScenarioManager : Singleton<ScenarioManager>, ISaveable
 #endif
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-    [DebugAction] public void TestServerSetGlobalWeather(int weatherType) => SetGlobalWeather((WeatherType)weatherType);
+    [DebugAction] public void TestSetWeather(int weatherType) => SetWeather((WeatherType)weatherType);
 #endif
 }

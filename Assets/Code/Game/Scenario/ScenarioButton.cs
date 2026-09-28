@@ -12,6 +12,6 @@ public class ScenarioButton : ValidatedMonoBehaviour
     public void Initialize(Scenario scenario)
     {
         text.text = scenario.Name;
-        button.onClick.AddListener(() => ScenarioManager.Instance.Select(scenario));
+        button.onClick.AddListener(() => ScenarioEditController.Instance.OpenEditor(scenario));
     }
 }
