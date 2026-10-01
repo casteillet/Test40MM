@@ -4,9 +4,9 @@ using UnityEngine;
 
 public sealed class PanelManager : Singleton<PanelManager>
 {
-    [Scene, SerializeField] private UIPanel[] panels;
+    [Scene, SerializeField] private Panel[] panels;
 
-    private Dictionary<PanelId, UIPanel> panelsById;
+    private Dictionary<PanelId, Panel> panelsById;
 
     private void OnValidate()
     {
@@ -19,27 +19,30 @@ public sealed class PanelManager : Singleton<PanelManager>
         InitRegistry();
     }
 
-    public void Activate(PanelId id) => GetPanel(id).Activate();
-    public void Deactivate(PanelId id) => GetPanel(id).Deactivate();
+    public void Activate(PanelId id)
+    {
+        if (!TryGetPanel(id, out var panel)) return;
+
+        panel.Activate();
+    }
+
+    public void Deactivate(PanelId id)
+    {
+        if (!TryGetPanel(id, out var panel)) return;
+
+        panel.Deactivate();
+    }
 
     public void ActivateExclusive(PanelId id)
     {
-        var target = GetPanel(id);
+        if (!TryGetPanel(id, out var target)) return;
 
-        foreach (var panel in panelsById.Values)
-        {
-            if (panel != target)
-            {
-                panel.Deactivate();
-            }
-        }
-
-        target.Activate();
+        panelsById.Values.ActivateExclusive(target);
     }
 
     private void InitRegistry()
     {
-        panelsById = new Dictionary<PanelId, UIPanel>(panels.Length);
+        panelsById = new Dictionary<PanelId, Panel>(panels.Length);
 
         foreach (var panel in panels)
         {
@@ -52,13 +55,11 @@ public sealed class PanelManager : Singleton<PanelManager>
         }
     }
 
-    private UIPanel GetPanel(PanelId id)
+    private bool TryGetPanel(PanelId id, out Panel panel)
     {
-        if (!panelsById.TryGetValue(id, out var panel))
-        {
-            Debug.LogError($"No panel found with id: '{id}'");
-        }
+        if (panelsById.TryGetValue(id, out panel)) return true;
 
-        return panel;
+        Debug.LogError($"No panel found with id: '{id}'", this);
+        return false;
     }
 }

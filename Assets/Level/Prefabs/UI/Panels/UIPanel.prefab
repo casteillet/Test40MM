@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4337183245165811528}
-  - component: {fileID: 1444523468009281846}
   - component: {fileID: 7947497783548476854}
   - component: {fileID: 3066902483381931713}
   - component: {fileID: 953448762490550597}
   - component: {fileID: 6561534204001113470}
+  - component: {fileID: 4752643993716120386}
   m_Layer: 0
   m_Name: UIPanel
   m_TagString: Untagged
@@ -40,24 +40,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1444523468009281846
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4437891554068658837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 236fecfc49b1d7b43b0449fc86ba897d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIPanel
-  id: 0
-  activeOnStart: 0
-  canvas: {fileID: 7947497783548476854}
-  raycaster: {fileID: 953448762490550597}
-  canvasGroup: {fileID: 6561534204001113470}
-  observers: []
 --- !u!223 &7947497783548476854
 Canvas:
   m_ObjectHideFlags: 0
@@ -133,3 +115,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &4752643993716120386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4437891554068658837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d827107d823758418f74429e75f783e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Panel
+  canvas: {fileID: 7947497783548476854}
+  raycaster: {fileID: 953448762490550597}
+  canvasGroup: {fileID: 6561534204001113470}
+  id: 0
+  activeOnStart: 0
