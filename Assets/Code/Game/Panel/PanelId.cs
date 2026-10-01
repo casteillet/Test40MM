@@ -1,4 +1,3 @@
-// Values are serialized as ints: never renumber or reuse one, only append.
 public enum PanelId
 {
     MainMenu = 0,

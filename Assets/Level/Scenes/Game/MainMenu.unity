@@ -1078,9 +1078,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubPanelGroup
   startSubPanel: {fileID: 1419372626}
-  ownedSubPanels:
-  - {fileID: 1419372626}
-  - {fileID: 1233499564}
 --- !u!1 &471467941
 GameObject:
   m_ObjectHideFlags: 0
@@ -1859,13 +1856,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubPanelGroup
   startSubPanel: {fileID: 738557295}
-  ownedSubPanels:
-  - {fileID: 738557295}
-  - {fileID: 1419372626}
-  - {fileID: 1233499564}
-  - {fileID: 784755497}
-  - {fileID: 291980739}
-  - {fileID: 1764532759}
 --- !u!1 &958636703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2387,9 +2377,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubPanelGroup
   startSubPanel: {fileID: 291980739}
-  ownedSubPanels:
-  - {fileID: 291980739}
-  - {fileID: 1764532759}
 --- !u!1 &1163111037
 GameObject:
   m_ObjectHideFlags: 0
@@ -3072,6 +3059,46 @@ PrefabInstance:
       propertyPath: id
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[0]._implementer
+      value: 
+      objectReference: {fileID: 842522116}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[1]._implementer
+      value: 
+      objectReference: {fileID: 463064597}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[2]._implementer
+      value: 
+      objectReference: {fileID: 677388367}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[3]._implementer
+      value: 
+      objectReference: {fileID: 958636705}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[4]._implementer
+      value: 
+      objectReference: {fileID: 397087049}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[5]._implementer
+      value: 
+      objectReference: {fileID: 2106228490}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[6]._implementer
+      value: 
+      objectReference: {fileID: 1152675559}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[7]._implementer
+      value: 
+      objectReference: {fileID: 233743603}
+    - target: {fileID: 4752643993716120386, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
+      propertyPath: observers.Array.data[8]._implementer
+      value: 
+      objectReference: {fileID: 1953175702}
     - target: {fileID: 7947497783548476854, guid: c4d449bc82ee97a41a8e580f9aade7e4, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25

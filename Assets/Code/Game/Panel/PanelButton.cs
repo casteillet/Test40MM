@@ -9,8 +9,15 @@ public sealed class PanelButton : ValidatedMonoBehaviour
 
     [Self, SerializeField] private Button button;
 
-    private void OnEnable() => button.onClick.AddListener(ActivateTargetPanel);
-    private void OnDisable() => button.onClick.RemoveListener(ActivateTargetPanel);
+    private void OnEnable()
+    {
+        button.onClick.AddListener(ActivateTargetPanel);
+    }
+
+    private void OnDisable()
+    {
+        button.onClick.RemoveListener(ActivateTargetPanel);
+    }
 
     private void ActivateTargetPanel() => PanelManager.Instance.ActivateExclusive(targetPanelId);
 }

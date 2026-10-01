@@ -20,7 +20,7 @@ public abstract class PanelBase : ValidatedMonoBehaviour, IActivatable
 
     protected virtual void Awake()
     {
-        CollectOwnedObservers();
+        InitOwnedObservers();
     }
 
     public void Activate() => SetActiveState(true);
@@ -53,7 +53,7 @@ public abstract class PanelBase : ValidatedMonoBehaviour, IActivatable
         canvasGroup.blocksRaycasts = visible;
     }
 
-    private void CollectOwnedObservers()
+    private void InitOwnedObservers()
     {
         foreach (var observer in GetComponentsInChildren<IPanelObserver>(true))
         {

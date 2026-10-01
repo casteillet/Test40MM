@@ -6,13 +6,13 @@ public sealed class SubPanelGroup : ValidatedMonoBehaviour, IPanelObserver
 {
     [Anywhere, SerializeField] private SubPanel startSubPanel;
 
-    [Child, SerializeField] private List<SubPanel> ownedSubPanels = new();
+    private readonly List<SubPanel> ownedSubPanels = new();
     
     private bool isOwnerPanelActive;
     
     private void Awake()
     {
-        //CollectOwnedSubPanels();
+        InitOwnedSubPanels();
         ValidateStartSubPanel();
     }
 
@@ -35,7 +35,7 @@ public sealed class SubPanelGroup : ValidatedMonoBehaviour, IPanelObserver
         ownedSubPanels.DeactivateAll();
     }
 
-    /*private void CollectOwnedSubPanels()
+    private void InitOwnedSubPanels()
     {
         foreach (var subPanel in GetComponentsInChildren<SubPanel>(true))
         {
@@ -44,7 +44,7 @@ public sealed class SubPanelGroup : ValidatedMonoBehaviour, IPanelObserver
                 ownedSubPanels.Add(subPanel);
             }
         }
-    }*/
+    }
 
     private void ValidateStartSubPanel()
     {
