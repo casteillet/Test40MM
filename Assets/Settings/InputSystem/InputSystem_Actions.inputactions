@@ -1,4 +1,5 @@
 {
+    "version": 1,
     "name": "InputSystem_Actions",
     "maps": [
         {
@@ -85,6 +86,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "RotateJoystickRight",
+                    "type": "Value",
+                    "id": "8d729f2c-273f-4ef6-8b15-69009e8c70d1",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "MoveJoystickLeft",
+                    "type": "Value",
+                    "id": "2c8cdb93-8afe-4414-9df7-324d6ff69b44",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -470,6 +489,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f3be876c-67df-4cb4-9f04-8b56cebee2aa",
+                    "path": "<HID::Thrustmaster Sol-R [R] Viper>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "<Joystick>{RightHand}",
+                    "action": "RotateJoystickRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fe9bd902-9cb9-478f-8791-1cc79704a9e0",
+                    "path": "<HID::Thrustmaster Sol-R [L] Viper>/stick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "<Joystick>{LeftHand}",
+                    "action": "MoveJoystickLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -1048,6 +1089,28 @@
             "devices": [
                 {
                     "devicePath": "<XRController>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "<Joystick>{LeftHand}",
+            "bindingGroup": "<Joystick>{LeftHand}",
+            "devices": [
+                {
+                    "devicePath": "<HID::Thrustmaster Sol-R [L] Viper>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "<Joystick>{RightHand}",
+            "bindingGroup": "<Joystick>{RightHand}",
+            "devices": [
+                {
+                    "devicePath": "<HID::Thrustmaster Sol-R [R] Viper>",
                     "isOptional": false,
                     "isOR": false
                 }
